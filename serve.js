@@ -1,0 +1,37 @@
+// Small local preview server so browser pages use http://localhost instead of file://.
+// This lets third-party map tiles receive the normal HTTP referrer required by OSM.
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const files = new Map([
+  ['/', ['index.html', 'text/html; charset=utf-8']],
+  ['/index.html', ['index.html', 'text/html; charset=utf-8']],
+  ['/styles.css', ['styles.css', 'text/css; charset=utf-8']],
+  ['/map.css', ['map.css', 'text/css; charset=utf-8']],
+  ['/app.js', ['app.js', 'text/javascript; charset=utf-8']]
+]);
+
+const root = __dirname;
+const server = http.createServer((request, response) => {
+  const route = new URL(request.url, 'http://localhost').pathname;
+  const file = files.get(route);
+  if (!file) {
+    response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    response.end('Not found');
+    return;
+  }
+  fs.readFile(path.join(root, file[0]), (error, content) => {
+    if (error) {
+      response.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+      response.end('Unable to read app file');
+      return;
+    }
+    response.writeHead(200, { 'Content-Type': file[1] });
+    response.end(content);
+  });
+});
+
+server.listen(8765, '127.0.0.1', () => {
+  process.stdout.write('Beste Belgische Bolognaise is available at http://localhost:8765/\n');
+});

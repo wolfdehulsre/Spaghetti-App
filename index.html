@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f3e9">
+  <meta name="description" content="Keep your personal ratings of spaghetti bolognaise across Belgium.">
+  <title>Beste Belgische Bolognaise</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="map.css">
+  <link rel="stylesheet" href="rating-actions.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Beste Belgische Bolognaise home">
+      <span class="brand-mark" aria-hidden="true">B</span>
+      <span>Beste Belgische<br><strong>Bolognaise</strong></span>
+    </a>
+    <a class="top-link" href="#ratings">My ratings <span id="nav-count">0</span></a>
+  </header>
+
+  <main id="top">
+    <section class="intro">
+      <p class="eyebrow">THE SEARCH FOR A PERFECT PLATE</p>
+      <h1>Good spaghetti<br><em>is worth remembering.</em></h1>
+      <p class="intro-copy">Rate the bolognaise, remember the place, and find your Belgian favourite.</p>
+      <div class="stats" aria-label="Your rating summary">
+        <div><strong id="stat-count">0</strong><span>plates rated</span></div>
+        <div class="stat-divider"></div>
+        <div><strong id="stat-average">—</strong><span>average score</span></div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <section class="form-card" aria-labelledby="form-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">YOUR TASTING NOTES</p><h2 id="form-title">Rate a plate</h2></div>
+          <span class="plate-icon" aria-hidden="true">🍝</span>
+        </div>
+        <form id="rating-form">
+          <div class="form-row">
+            <label class="field grow">Restaurant<input name="restaurant" type="text" placeholder="Where did you eat?" required maxlength="80"></label>
+            <label class="field date-field">Date<input name="date" type="date" required></label>
+          </div>
+          <label class="field address-field">Restaurant location <span class="optional-label">optional · search for a place or enter a town</span><input id="address-input" name="address" type="search" placeholder="Restaurant name, street, or town" maxlength="140" autocomplete="off" aria-autocomplete="list" aria-controls="place-suggestions"></label>
+          <div id="place-suggestions" class="place-suggestions" role="listbox" aria-label="Place suggestions" hidden></div>
+          <p id="place-search-status" class="place-search-status" aria-live="polite">Choose a suggestion to set the map pin automatically.</p>
+          <details class="geocoder-setup">
+            <summary>Set up place search</summary>
+            <p>Place suggestions use Geoapify. <a href="https://myprojects.geoapify.com/" target="_blank" rel="noreferrer">Create a free API key</a> to enable search. The key is saved in this browser and sent with place searches. Restrict it to this app’s web address in your Geoapify settings.</p>
+            <label class="field">Geoapify API key<input id="geoapify-key" type="password" autocomplete="off" placeholder="Paste your API key"></label>
+            <button id="save-api-key" class="pin-button" type="button">Save key</button>
+            <span id="api-key-status" class="api-key-status" aria-live="polite"></span>
+          </details>
+          <input type="hidden" name="lat"><input type="hidden" name="lng">
+          <div class="pin-controls"><button id="choose-location" class="pin-button" type="button">Choose spot on map</button><span id="pin-status" class="optional-label" aria-live="polite">No map pin selected</span></div>
+          <fieldset class="rating-fields">
+            <legend>Give each one a score <span>1 = needs work · 5 = excellent</span></legend>
+            <div class="rating-row"><span>Sauce</span><div class="score-options" data-score="sauce" role="radiogroup" aria-label="Sauce rating"></div></div>
+            <div class="rating-row"><span>Pasta texture</span><div class="score-options" data-score="texture" role="radiogroup" aria-label="Pasta texture rating"></div></div>
+            <div class="rating-row"><span>Portion</span><div class="score-options" data-score="portion" role="radiogroup" aria-label="Portion rating"></div></div>
+          </fieldset>
+          <fieldset class="extras-field">
+            <legend>The little extras</legend>
+            <div class="check-grid">
+              <label class="check-option"><input type="checkbox" name="cheese"><span class="checkmark"></span><span>Enough cheese</span></label>
+              <label class="check-option"><input type="checkbox" name="hotSauce"><span class="checkmark"></span><span>Hot sauce</span></label>
+              <label class="check-option"><input type="checkbox" name="gratinated"><span class="checkmark"></span><span>Gratinated</span></label>
+              <label class="check-option"><input type="checkbox" name="location"><span class="checkmark"></span><span>Great location</span></label>
+              <label class="check-option"><input type="checkbox" name="hospitality"><span class="checkmark"></span><span>Warm hospitality</span></label>
+            </div>
+          </fieldset>
+          <button class="submit-button" type="submit">Save this plate <span aria-hidden="true">↗</span></button>
+          <button id="cancel-edit" class="cancel-edit" type="button" hidden>Cancel editing</button>
+          <p class="privacy-note">Your ratings are saved on this device.</p>
+        </form>
+      </section>
+
+      <section class="ratings-section" id="ratings" aria-labelledby="ratings-title">
+        <div class="list-heading"><div><p class="eyebrow">YOUR PERSONAL GUIDE</p><h2 id="ratings-title">Rated & remembered</h2></div><span id="list-count" class="count-pill">0 plates</span></div>
+        <div id="ratings-list" class="ratings-list" aria-live="polite"></div>
+      </section>
+    </section>
+    <section class="map-section" aria-labelledby="map-title">
+      <div class="list-heading"><div><p class="eyebrow">WHERE THE GOOD PLATES ARE</p><h2 id="map-title">Your spaghetti map</h2></div><span id="map-count" class="count-pill">0 places</span></div>
+      <p class="map-help" id="map-help">Choose “Choose spot on map” while adding a rating, then tap the map to place its pin. You can zoom and drag to find the restaurant.</p>
+      <div id="belgium-map" role="application" tabindex="-1" aria-label="Map of Belgium showing your spaghetti ratings"></div>
+      <p class="map-attribution">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a></p>
+    </section>
+    <footer><span>MADE FOR THE LOVE OF A GOOD BOLOGNAISE</span><span>Belgium · one plate at a time</span></footer>
+  </main>
+</body>
+</html>
