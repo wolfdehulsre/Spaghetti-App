@@ -1,6 +1,8 @@
-.env
-.env.*
+.env*
 !.env.example
+runtime-config.js
 node_modules/
 .DS_Store
 Thumbs.db
+supabase/.temp/
+supabase/.branches/
