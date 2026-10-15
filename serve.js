@@ -9,7 +9,15 @@ const files = new Map([
   ['/index.html', ['index.html', 'text/html; charset=utf-8']],
   ['/styles.css', ['styles.css', 'text/css; charset=utf-8']],
   ['/map.css', ['map.css', 'text/css; charset=utf-8']],
-  ['/app.js', ['app.js', 'text/javascript; charset=utf-8']]
+  ['/app.js', ['app.js', 'text/javascript; charset=utf-8']],
+  ['/pwa.js', ['pwa.js', 'text/javascript; charset=utf-8']],
+  ['/pwa.css', ['pwa.css', 'text/css; charset=utf-8']],
+  ['/icon-192.png', ['icon-192.png', 'image/png']],
+  ['/icon-512.png', ['icon-512.png', 'image/png']],
+  ['/runtime-config.js', ['runtime-config.js', 'text/javascript; charset=utf-8']],
+  ['/manifest.webmanifest', ['manifest.webmanifest', 'application/manifest+json']],
+  ['/icon.svg', ['icon.svg', 'image/svg+xml']],
+  ['/service-worker.js', ['service-worker.js', 'text/javascript; charset=utf-8']]
 ]);
 
 const root = __dirname;
@@ -35,3 +43,4 @@ const server = http.createServer((request, response) => {
 server.listen(8765, '127.0.0.1', () => {
   process.stdout.write('Beste Belgische Bolognaise is available at http://localhost:8765/\n');
 });
+

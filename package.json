@@ -1,0 +1,14 @@
+{
+  "name": "beste-belgische-bolognaise",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node build-config.js",
+    "dev": "node serve.js",
+    "test:rls": "supabase test db"
+  },
+  "devDependencies": {
+    "supabase": "^2.120.0"
+  }
+}
+
