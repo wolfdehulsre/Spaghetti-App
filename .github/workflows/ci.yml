@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Build browser configuration
+        run: npm run build
+        env:
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_ANON_KEY: ci-placeholder-public-anon-key
+          GROUP_ID: 00000000-0000-4000-8000-000000000000
+          GEOAPIFY_API_KEY: ""
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check pwa.js
+          node --check service-worker.js
+          node --check build-config.js
+          node --check serve.js
+
+      - name: Ensure generated runtime config is not tracked
+        run: |
+          if git ls-files --error-unmatch runtime-config.js >/dev/null 2>&1; then
+            echo "runtime-config.js must not be committed."
+            exit 1
+          fi
