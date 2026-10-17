@@ -48,6 +48,14 @@ jobs:
           node --check build-config.js
           node --check serve.js
 
+      - name: Set up Deno
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version: 2.9.7
+
+      - name: Type-check the invite Edge Function
+        run: deno check --node-modules-dir=auto supabase/functions/invite-member/index.ts
+
       - name: Ensure generated configuration and local secrets are not tracked
         run: |
           if git ls-files --error-unmatch runtime-config.js >/dev/null 2>&1; then
