@@ -10,6 +10,7 @@ const files = new Map([
   ['/styles.css', ['styles.css', 'text/css; charset=utf-8']],
   ['/map.css', ['map.css', 'text/css; charset=utf-8']],
   ['/app.js', ['app.js', 'text/javascript; charset=utf-8']],
+  ['/i18n.js', ['i18n.js', 'text/javascript; charset=utf-8']],
   ['/pwa.js', ['pwa.js', 'text/javascript; charset=utf-8']],
   ['/pwa.css', ['pwa.css', 'text/css; charset=utf-8']],
   ['/icon-192.png', ['icon-192.png', 'image/png']],

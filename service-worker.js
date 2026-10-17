@@ -1,5 +1,5 @@
-const CACHE = "bbb-shell-v16";
-const SHELL = ["/", "/index.html", "/styles.css", "/map.css", "/app.js", "/pwa.js", "/pwa.css", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
+const CACHE = "bbb-shell-v18";
+const SHELL = ["/", "/index.html", "/styles.css", "/map.css", "/app.js", "/i18n.js", "/pwa.js", "/pwa.css", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
