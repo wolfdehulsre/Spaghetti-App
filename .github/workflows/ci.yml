@@ -21,10 +21,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
           cache: npm
@@ -48,9 +48,56 @@ jobs:
           node --check build-config.js
           node --check serve.js
 
-      - name: Ensure generated runtime config is not tracked
+      - name: Ensure generated configuration and local secrets are not tracked
         run: |
           if git ls-files --error-unmatch runtime-config.js >/dev/null 2>&1; then
             echo "runtime-config.js must not be committed."
             exit 1
           fi
+          tracked_env_files="$(git ls-files | grep -E '(^|/)\.env($|\.)' | grep -vE '(^|/)\.env\.example$' || true)"
+          if [ -n "$tracked_env_files" ]; then
+            echo "Local environment files must not be committed."
+            exit 1
+          fi
+          if ! git check-ignore -q runtime-config.js; then
+            echo "runtime-config.js must be ignored by Git."
+            exit 1
+          fi
+
+  rls:
+    name: rls
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Start disposable local Supabase services
+        # Keep the CLI's local anon/service-role keys out of Actions logs.
+        run: |
+          if ! npx supabase start -x realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor > "$RUNNER_TEMP/supabase-start.log" 2>&1; then
+            echo "Supabase local startup failed. CLI output is suppressed to keep generated local credentials out of logs."
+            exit 1
+          fi
+          echo "Disposable Supabase services started."
+        env:
+          SUPABASE_TELEMETRY_DISABLED: "true"
+
+      - name: Apply migrations to the disposable database
+        run: npx supabase db reset
+        env:
+          SUPABASE_TELEMETRY_DISABLED: "true"
+
+      - name: Run database and RLS tests
+        run: npm run test:rls
+        env:
+          SUPABASE_TELEMETRY_DISABLED: "true"

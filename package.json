@@ -5,7 +5,7 @@
   "scripts": {
     "build": "node build-config.js",
     "dev": "node serve.js",
-    "test:rls": "supabase test db"
+    "test:rls": "supabase test db --local"
   },
   "devDependencies": {
     "supabase": "^2.120.0"
