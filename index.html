@@ -47,13 +47,6 @@
           <label class="field address-field">Restaurant location <span class="optional-label">optional · search for a place or enter a town</span><input id="address-input" name="address" type="search" placeholder="Restaurant name, street, or town" maxlength="140" autocomplete="off" aria-autocomplete="list" aria-controls="place-suggestions"></label>
           <div id="place-suggestions" class="place-suggestions" role="listbox" aria-label="Place suggestions" hidden></div>
           <p id="place-search-status" class="place-search-status" aria-live="polite">Choose a suggestion to set the map pin automatically.</p>
-          <details class="geocoder-setup">
-            <summary>Set up place search</summary>
-            <p>Place suggestions use Geoapify. <a href="https://myprojects.geoapify.com/" target="_blank" rel="noreferrer">Create a free API key</a> to enable search. The key is saved in this browser and sent with place searches. Restrict it to this app’s web address in your Geoapify settings.</p>
-            <label class="field">Geoapify API key<input id="geoapify-key" type="password" autocomplete="off" placeholder="Paste your API key"></label>
-            <button id="save-api-key" class="pin-button" type="button">Save key</button>
-            <span id="api-key-status" class="api-key-status" aria-live="polite"></span>
-          </details>
           <input type="hidden" name="lat"><input type="hidden" name="lng">
           <div class="pin-controls"><button id="choose-location" class="pin-button" type="button">Choose spot on map</button><span id="pin-status" class="optional-label" aria-live="polite">No map pin selected</span></div>
           <fieldset class="rating-fields">
