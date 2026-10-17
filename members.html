@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#f7f3e9"><meta name="robots" content="noindex">
+  <title>Members · Beste Belgische Bolognaise</title>
+  <link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/pwa.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/runtime-config.js"></script><script src="/i18n.js" defer></script><script src="/members.js" defer></script><script src="/pwa.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/" aria-label="Beste Belgische Bolognaise home"><span class="brand-mark" aria-hidden="true">B</span><span>Beste Belgische<br><strong>Bolognaise</strong></span></a><details id="account-controls" class="account-menu" hidden><summary id="account-name">Account</summary><div class="account-dropdown"><a href="/">Home</a><button id="sign-out" type="button">Sign out</button></div></details></header>
+  <main class="members-page">
+    <section class="intro"><p class="eyebrow">SHARED SPAGHETTI CLUB</p><h1>Your people,<br><em>at the same table.</em></h1><p class="intro-copy">Invite friends to rate and remember great spaghetti together.</p><a class="back-link" href="/">← <span>Back to ratings</span></a></section>
+    <p id="members-access" role="status" aria-live="polite">Checking your access…</p>
+    <div id="members-content" class="content-grid" hidden>
+      <section class="form-card" aria-labelledby="member-form-title"><div class="section-heading"><div><p class="eyebrow">MAKE ROOM AT THE TABLE</p><h2 id="member-form-title">Add a member</h2></div><span class="plate-icon" aria-hidden="true">🍝</span></div>
+        <p class="member-help">New members receive an email to set their own password. Existing accounts keep their password.</p>
+        <form id="member-form"><label class="field">Display name <span class="optional-label">optional</span><input name="display_name" type="text" maxlength="80" autocomplete="name" placeholder="How should we call them?"></label><label class="field">Email<input name="email" type="email" maxlength="254" required autocomplete="email" placeholder="friend@example.com"></label><button class="submit-button" type="submit">Add member <span aria-hidden="true">↗</span></button></form>
+        <p id="member-status" class="member-feedback" role="status" aria-live="polite"></p>
+      </section>
+      <section class="ratings-section" aria-labelledby="members-title"><div class="list-heading"><div><p class="eyebrow">YOUR SPAGHETTI CLUB</p><h2 id="members-title">Around the table</h2></div><button id="refresh-members" class="pin-button" type="button">Refresh</button></div><p id="member-list-status" role="status" aria-live="polite"></p><div id="members-list" class="ratings-list"></div></section>
+    </div>
+    <footer><span>MADE FOR THE LOVE OF A GOOD BOLOGNAISE</span><span>Belgium · one plate at a time</span></footer>
+  </main>
+  <div id="pwa-status" role="status" aria-live="polite" hidden></div><aside id="pwa-update" role="status" aria-live="polite" hidden><span>A new version is ready.</span><button id="apply-pwa-update" type="button">Update app</button></aside>
+</body>
+</html>
