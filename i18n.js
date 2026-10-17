@@ -1,6 +1,34 @@
 // UI copy only: member names, restaurant data and form values are never translated.
 (() => {
   const copy = {
+    'Manage members':'Leden beheren', 'Home':'Hoofdpagina', 'Your people,':'Jouw mensen,', 'at the same table.':'aan dezelfde tafel.',
+    'Invite friends to rate and remember great spaghetti together.':'Nodig vrienden uit om samen lekkere spaghetti te beoordelen en te onthouden.',
+    'Back to ratings':'Terug naar beoordelingen', 'Checking your access…':'Je toegang controleren…',
+    'MAKE ROOM AT THE TABLE':'MAAK PLAATS AAN TAFEL', 'Add a member':'Voeg een lid toe', 'Add member':'Lid toevoegen',
+    'New members receive an email to set their own password. Existing accounts keep their password.':'Nieuwe leden ontvangen een e-mail om zelf een wachtwoord in te stellen. Bestaande accounts behouden hun wachtwoord.',
+    'Display name':'Weergavenaam', 'optional':'optioneel', 'How should we call them?':'Hoe mogen we hen noemen?',
+    'YOUR SPAGHETTI CLUB':'JOUW SPAGHETTICLUB', 'Around the table':'Samen aan tafel', 'Refresh':'Vernieuwen',
+    'Loading members…':'Leden laden…', 'Owner':'Eigenaar', 'Member':'Lid', 'Account active':'Account actief',
+    'Waiting for account activation':'Wacht op accountactivatie', 'Resend invitation':'Uitnodiging opnieuw sturen',
+    'Sending invitation…':'Uitnodiging versturen…', 'Adding member…':'Lid toevoegen…',
+    'Invitation sent. They can choose a password using the email link.':'Uitnodiging verstuurd. Via de link in de e-mail kunnen ze een wachtwoord kiezen.',
+    'This person is already a member. Their access is ready.':'Deze persoon is al lid en heeft toegang tot de groep.',
+    'Existing account added. They can sign in with their own password.':'Bestaand account toegevoegd. Aanmelden kan met het eigen wachtwoord.',
+    'Group access is ready. Use Resend invitation to send a fresh activation email.':'De groepstoegang is klaar. Stuur de uitnodiging opnieuw om een nieuwe activatiemail te versturen.',
+    'Member added.':'Lid toegevoegd.', 'The app could not connect. Reload and try again.':'De app kon geen verbinding maken. Herlaad de pagina en probeer opnieuw.',
+    'Sign out failed. Try again.':'Afmelden mislukt. Probeer opnieuw.',
+    'Sign in as a group owner first.':'Meld je eerst aan als groepseigenaar.', 'Your session expired. Sign in again.':'Je sessie is verlopen. Meld je opnieuw aan.',
+    'Could not verify group permissions.':'De groepsrechten konden niet worden gecontroleerd.', 'Only a group owner can invite members.':'Alleen een groepseigenaar kan leden uitnodigen.',
+    'Could not check invitation limits. Try again later.':'De uitnodigingslimiet kon niet worden gecontroleerd. Probeer later opnieuw.',
+    'You have sent too many invitations. Try again in an hour.':'Je hebt te veel uitnodigingen verstuurd. Probeer het over een uur opnieuw.',
+    'Enter a valid email address and group.':'Voer een geldig e-mailadres en een geldige groep in.',
+    'Could not look up member accounts. Try again.':'De ledenaccounts konden niet worden opgezocht. Probeer opnieuw.',
+    'Could not load members. Try again.':'De leden konden niet worden geladen. Probeer opnieuw.',
+    'The invitation could not be sent. Check the email address and try again.':'De uitnodiging kon niet worden verstuurd. Controleer het e-mailadres en probeer opnieuw.',
+    'Could not verify group membership. Try again.':'Het groepslidmaatschap kon niet worden gecontroleerd. Probeer opnieuw.',
+    'The account exists, but group access could not be added. Retry to finish adding this member.':'Het account bestaat, maar de groepstoegang kon niet worden toegevoegd. Probeer opnieuw om dit lid toe te voegen.',
+    'Group access is ready, but the invitation email could not be sent. Try resending it.':'De groepstoegang is klaar, maar de uitnodigingsmail kon niet worden verstuurd. Probeer de mail opnieuw te sturen.',
+    'Could not complete this request. Try again.':'Dit verzoek kon niet worden uitgevoerd. Probeer opnieuw.', 'Invalid request.':'Ongeldig verzoek.',
     'SHARED SPAGHETTI CLUB':'GEDEELDE SPAGHETTICLUB',
     'Sign in':'Aanmelden', 'Only invited members can access shared ratings.':'Alleen uitgenodigde leden hebben toegang tot gedeelde beoordelingen.',
     'THE SEARCH FOR A PERFECT PLATE':'OP ZOEK NAAR HET PERFECTE BORD',
@@ -74,7 +102,7 @@
     while (walker.nextNode()) {
       const node = walker.currentNode;
       // Exclude all user-controlled fields and third-party map content.
-      if (node.parentElement.closest('script,style,textarea,option,.card-name,.card-date,.card-location,#account-name,.leaflet-pane,.leaflet-control,#place-suggestions')) continue;
+      if (node.parentElement.closest('script,style,textarea,option,[data-i18n-skip],.card-name,.card-date,.card-location,#account-name,.leaflet-pane,.leaflet-control,#place-suggestions')) continue;
       let record = originals.get(node);
       if (!record || node.nodeValue !== record.rendered) record = { source: node.nodeValue };
       record.rendered = translate(record.source);

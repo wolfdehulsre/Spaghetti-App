@@ -40,3 +40,9 @@ Open the production HTTPS URL in Chrome on Android, sign in, open Chrome's menu,
 
 Run `supabase test db` for the pgTAP RLS checks in `supabase/tests/rls.test.sql`. Before production, also run the app-level checklist in this README manually with two invited accounts: auth/session restore, restaurant and pin creation, rating create/edit/reload, cross-member visibility, non-member denial, role tampering denial, network failure/retry, narrow mobile layout, and Chrome Android installation. API keys and a hosted Supabase project are needed for those end-to-end checks.
 
+
+## Manage members
+
+Owners can open **Manage members** from the header dropdown to visit `/members.html`. The page shows account activation status, adds new or existing accounts to the group, and can resend invitations for accounts awaiting activation. New members choose their own password from the invitation email. Repeating an invitation does not duplicate memberships or change existing passwords, names, or owner roles. The logo and back link return to the home page.
+
+Run `node --test tests/invite-member.test.mjs` for invite retry, membership recovery, role checks, rate limiting and directory isolation tests. After changing the function, deploy both `index.ts` and `handler.mjs` as the `invite-member` Edge Function with JWT verification enabled. No schema migration is needed for this fix.

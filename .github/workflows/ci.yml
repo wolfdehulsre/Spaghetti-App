@@ -44,6 +44,7 @@ jobs:
         run: |
           node --check app.js
           node --check i18n.js
+          node --check members.js
           node --check pwa.js
           node --check service-worker.js
           node --check build-config.js
@@ -56,6 +57,9 @@ jobs:
 
       - name: Type-check the invite Edge Function
         run: deno check --node-modules-dir=auto supabase/functions/invite-member/index.ts
+
+      - name: Test invitation retry and authorization behavior
+        run: node --test tests/invite-member.test.mjs
 
       - name: Ensure generated configuration and local secrets are not tracked
         run: |
