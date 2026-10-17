@@ -1,5 +1,14 @@
-const CACHE = "bbb-shell-v19";
-const SHELL = ["/", "/index.html", "/styles.css", "/map.css", "/app.js", "/i18n.js", "/members.html", "/members.js", "/pwa.js", "/pwa.css", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
+const CACHE = "bbb-shell-v20";
+const SHELL = ["/", "/index.html", "/styles.css", "/map.css", "/app.js", "/i18n.js", "/members", "/members.html", "/members.js", "/pwa.js", "/pwa.css", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
+
+// Pages redirects .html URLs to extensionless routes. A followed redirect cannot
+// be returned to a navigation with redirect mode "manual". Preserve its body and
+// security headers while removing the redirect flag before caching or serving.
+function navigationSafe(response) {
+  return response.redirected ? new Response(response.body, {
+    status: response.status, statusText: response.statusText, headers: response.headers
+  }) : response;
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
@@ -7,7 +16,7 @@ self.addEventListener("install", (event) => {
     for (const path of SHELL) {
       const response = await fetch(path, { cache: "reload" });
       if (!response.ok) throw new Error("App shell request failed: " + path);
-      await cache.put(path, response);
+      await cache.put(path, navigationSafe(response));
     }
   })());
 });
@@ -28,8 +37,8 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET" || url.origin !== self.location.origin || !SHELL.includes(url.pathname)) return;
   event.respondWith(caches.open(CACHE).then(async (cache) => {
     const cached = await cache.match(request);
-    if (cached) return cached;
-    const response = await fetch(request);
+    if (cached) return navigationSafe(cached);
+    const response = navigationSafe(await fetch(request));
     if (response.ok) await cache.put(request, response.clone());
     return response;
   }));

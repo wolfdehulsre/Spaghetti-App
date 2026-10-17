@@ -11,6 +11,7 @@ const files = new Map([
   ['/map.css', ['map.css', 'text/css; charset=utf-8']],
   ['/app.js', ['app.js', 'text/javascript; charset=utf-8']],
   ['/members.html', ['members.html', 'text/html; charset=utf-8']],
+  ['/members', ['members.html', 'text/html; charset=utf-8']],
   ['/members.js', ['members.js', 'text/javascript; charset=utf-8']],
   ['/i18n.js', ['i18n.js', 'text/javascript; charset=utf-8']],
   ['/pwa.js', ['pwa.js', 'text/javascript; charset=utf-8']],
