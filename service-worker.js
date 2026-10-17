@@ -1,4 +1,4 @@
-const CACHE = "bbb-shell-v15";
+const CACHE = "bbb-shell-v16";
 const SHELL = ["/", "/index.html", "/styles.css", "/map.css", "/app.js", "/pwa.js", "/pwa.css", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -34,3 +34,4 @@ self.addEventListener("fetch", (event) => {
     return response;
   }));
 });
+
