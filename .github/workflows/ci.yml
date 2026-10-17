@@ -54,7 +54,7 @@ jobs:
           deno-version: 2.9.7
 
       - name: Type-check the invite Edge Function
-        run: deno check supabase/functions/invite-member/index.ts
+        run: deno check --node-modules-dir=auto supabase/functions/invite-member/index.ts
 
       - name: Ensure generated configuration and local secrets are not tracked
         run: |
@@ -109,4 +109,3 @@ jobs:
         run: npm run test:rls
         env:
           SUPABASE_TELEMETRY_DISABLED: "true"
-
