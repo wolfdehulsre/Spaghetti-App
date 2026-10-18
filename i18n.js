@@ -1,6 +1,13 @@
 // UI copy only: member names, restaurant data and form values are never translated.
 (() => {
   const copy = {
+    'Rating overview':'Ratingoverzicht', 'Every plate,':'Elk bord,', 'around the table.':'samen aan tafel.',
+    'Explore the ratings and favourite places shared by your group.':'Ontdek de beoordelingen en favoriete plekken van je groep.',
+    'Group rating summary':'Overzicht van de groepsbeoordelingen', 'Group spaghetti map':'Spaghettikaart van de groep',
+    'Map of Belgium showing group spaghetti ratings':'Kaart van België met spaghettibeoordelingen van de groep',
+    'Select a marker to see the ratings for that restaurant. Ratings without a location are listed above.':'Selecteer een pin om de beoordelingen van dat restaurant te zien. Beoordelingen zonder locatie staan hierboven.',
+    'No ratings yet.':'Nog geen beoordelingen.', 'Could not load group ratings. Reload and try again.':'De groepsbeoordelingen konden niet worden geladen. Vernieuw en probeer opnieuw.',
+    'The map could not load. You can still browse the ratings above.':'De kaart kon niet worden geladen. Je kunt de beoordelingen hierboven nog bekijken.',
     'Manage members':'Leden beheren', 'Home':'Hoofdpagina', 'Your people,':'Jouw mensen,', 'at the same table.':'aan dezelfde tafel.',
     'Invite friends to rate and remember great spaghetti together.':'Nodig vrienden uit om samen lekkere spaghetti te beoordelen en te onthouden.',
     'Back to ratings':'Terug naar beoordelingen', 'Checking your access…':'Je toegang controleren…',

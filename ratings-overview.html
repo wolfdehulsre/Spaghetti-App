@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f3e9">
+  <meta name="description" content="Keep your personal ratings of spaghetti bolognaise across Belgium.">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <title>Rating overview · Beste Belgische Bolognaise</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="map.css"><link rel="stylesheet" href="/pwa.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/runtime-config.js"></script><script src="/i18n.js" defer></script><script src="/ratings-overview.js" defer></script><script src="/pwa.js" defer></script>
+</head>
+<body class="overview-page">
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Beste Belgische Bolognaise home">
+      <span class="brand-mark" aria-hidden="true">B</span>
+      <span>Beste Belgische<br><strong>Bolognaise</strong></span>
+    </a>
+    <details id="account-controls" class="account-menu" hidden><summary id="account-name">Account</summary><div class="account-dropdown"><a href="/">Home</a><a href="/ratings-overview" aria-current="page">Rating overview</a><a id="overview-members" href="/members" hidden>Manage members</a><button id="sign-out" type="button">Sign out</button></div></details>
+  </header>
+
+  <p id="overview-status" class="overview-status" role="status" aria-live="polite">Checking your access…</p><div id="application" hidden><main id="top">
+    <section class="intro">
+      <p class="eyebrow">THE SEARCH FOR A PERFECT PLATE</p>
+      <h1>Every plate,<br><em>around the table.</em></h1>
+      <p class="intro-copy">Explore the ratings and favourite places shared by your group.</p>
+      <div class="stats" aria-label="Group rating summary">
+        <div><strong id="stat-count">0</strong><span>plates rated</span></div>
+        <div class="stat-divider"></div>
+        <div><strong id="stat-average">—</strong><span>average score</span></div>
+      </div>
+    </section>
+
+    <section class="overview-content">
+      <section class="ratings-section" id="ratings" aria-labelledby="ratings-title">
+        <div class="list-heading"><div><p class="eyebrow">YOUR SPAGHETTI CLUB</p><h2 id="ratings-title">Rating overview</h2></div><span id="list-count" class="count-pill">0 plates</span></div>
+        <div id="ratings-list" class="ratings-list" aria-live="polite"></div>
+      </section>
+    </section>
+    <section class="map-section" aria-labelledby="map-title">
+      <div class="list-heading"><div><p class="eyebrow">WHERE THE GOOD PLATES ARE</p><h2 id="map-title">Group spaghetti map</h2></div><span id="map-count" class="count-pill">0 places</span></div>
+      <p class="map-help" id="map-help">Select a marker to see the ratings for that restaurant. Ratings without a location are listed above.</p>
+      <div id="belgium-map" role="application" tabindex="-1" aria-label="Map of Belgium showing group spaghetti ratings"></div>
+      <p class="map-attribution">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a></p>
+    </section>
+    <footer><span>MADE FOR THE LOVE OF A GOOD BOLOGNAISE</span><span>Belgium · one plate at a time</span></footer>
+  </main></div>
+<div id="pwa-status" role="status" aria-live="polite" hidden></div><aside id="pwa-update" role="status" aria-live="polite" hidden><span>A new version is ready.</span><button id="apply-pwa-update" type="button">Update app</button></aside></body>
+</html>
+
+
