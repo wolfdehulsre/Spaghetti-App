@@ -60,7 +60,7 @@ jobs:
         run: deno check --node-modules-dir=auto supabase/functions/invite-member/index.ts
 
       - name: Test authentication screen transitions
-        run: node --test tests/auth-flow.test.mjs tests/ratings-view.test.mjs
+        run: node --test tests/auth-flow.test.mjs tests/ratings-view.test.mjs tests/rating-form.test.mjs
 
       - name: Test invitation retry and authorization behavior
         run: node --test tests/invite-member.test.mjs
