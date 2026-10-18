@@ -25,11 +25,18 @@ Put the returned group UUID in `.env` as `GROUP_ID`, then run `npm run build`. T
 
 Set Supabase Auth Site URL and allowed redirect URLs to your local URL and production HTTPS origin. Set Edge Function secrets in the Supabase dashboard/CLI: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `APP_ORIGIN` (exact app origin, no trailing slash). Deploy `invite-member` with `supabase functions deploy invite-member`. Signed-in owners can then invite a friend by email in the app. The function verifies the caller's owner role, sends the Auth invitation, and creates a member role; clients cannot write roles. The service-role key stays in Supabase Edge Function secrets.
 
-## Local Supabase with Docker Desktop
+## Optional local Supabase with Docker Desktop
 
-For the local Supabase stack, install and start Docker Desktop first. From this project folder, run npm install, then npx supabase start. The Supabase CLI runs the local database and services in Docker containers. Apply the checked-in migrations to the local database with npx supabase db reset, then set the local Supabase URL and public anon key shown by the CLI in .env. Keep .env private; do not paste CLI output containing keys into GitHub. Finish with npm run build and npm run dev. Stop the local containers with npx supabase stop.
+Docker Desktop is **optional** and is only needed when running a local Supabase stack for development or database/RLS testing. It is **not** needed to run the production app: Cloudflare hosts the frontend and the hosted Supabase project provides Auth, Postgres, and Edge Functions. Your computer and Docker Desktop can be switched off while the production app remains online.
 
-The hosted-project workflow (supabase link followed by supabase db push) targets the linked remote database. Use it only when intentionally applying migrations to that hosted project; Docker Desktop is for the local stack.
+GitHub Actions runs the RLS tests using disposable Supabase containers on GitHub-hosted runners; these do **not** require Docker Desktop on your own computer. Keep the Supabase CLI, migrations, RLS tests, and CI workflow even if you do not use Docker locally.
+
+To use an isolated local Supabase environment, install and start Docker Desktop, then from this project folder run `npm install` and `npx supabase start`. Apply the checked-in migrations with `npx supabase db reset`, set the local Supabase URL and public anon key shown by the CLI in your private `.env`, then run `npm run build` and `npm run dev`. Stop the local containers with `npx supabase stop`. Do not paste CLI output containing keys into GitHub.
+
+For frontend-only development against the hosted Supabase project, Docker is not needed: configure the browser-safe hosted Supabase URL and anon key, then run `npm run build` and `npm run dev`. Be careful: this setup can access or change real hosted data. Never use production service-role keys in the browser or commit credentials.
+
+The hosted-project workflow (`supabase link` followed by `supabase db push`) targets the linked remote database. Use it only when intentionally applying migrations to that hosted project; Docker Desktop is for the optional local stack.
+
 ## Production hosting and Android
 
 Use static hosting with HTTPS (for example a static site host that supports build-time environment variables). Build command: `npm run build`; publish directory: project root. Configure `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `GROUP_ID`, and optional `GEOAPIFY_API_KEY` as host build variables. Set Supabase Auth Site URL/redirect allow-list and Edge Function `APP_ORIGIN` to the production origin, then restrict browser keys to that origin. Deploy the Supabase migrations and Edge Function before inviting users.
