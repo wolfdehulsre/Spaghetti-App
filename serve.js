@@ -16,6 +16,7 @@ const files = new Map([
   ['/ratings-overview.html', ['ratings-overview.html', 'text/html; charset=utf-8']],
   ['/ratings-overview.js', ['ratings-overview.js', 'text/javascript; charset=utf-8']],
   ['/members.js', ['members.js', 'text/javascript; charset=utf-8']],
+  ['/profile-menu.js', ['profile-menu.js', 'text/javascript; charset=utf-8']],
   ['/i18n.js', ['i18n.js', 'text/javascript; charset=utf-8']],
   ['/pwa.js', ['pwa.js', 'text/javascript; charset=utf-8']],
   ['/pwa.css', ['pwa.css', 'text/css; charset=utf-8']],

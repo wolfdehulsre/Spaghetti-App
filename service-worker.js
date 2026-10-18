@@ -1,5 +1,5 @@
-const CACHE = "bbb-shell-v23";
-const SHELL = ["/", "/index.html", "/styles.css", "/map.css", "/app.js", "/i18n.js", "/members", "/members.html", "/members.js", "/ratings-overview", "/ratings-overview.html", "/ratings-overview.js", "/pwa.js", "/pwa.css", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
+const CACHE = "bbb-shell-v24";
+const SHELL = ["/", "/index.html", "/styles.css", "/map.css", "/app.js", "/i18n.js", "/profile-menu.js", "/members", "/members.html", "/members.js", "/ratings-overview", "/ratings-overview.html", "/ratings-overview.js", "/pwa.js", "/pwa.css", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 // Pages redirects .html URLs to extensionless routes. A followed redirect cannot
 // be returned to a navigation with redirect mode "manual". Preserve its body and
