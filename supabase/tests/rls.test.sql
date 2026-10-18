@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(28);
+select plan(40);
 insert into auth.users(id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data) values
 ('10000000-0000-4000-8000-000000000001','authenticated','authenticated','owner@test.invalid','',now(),'{}','{}'),
 ('10000000-0000-4000-8000-000000000002','authenticated','authenticated','member@test.invalid','',now(),'{}','{}'),
@@ -26,6 +26,24 @@ select results_eq($$delete from public.restaurants where id='30000000-0000-4000-
 select results_eq($$update public.group_members set display_name='New name' where group_id='20000000-0000-4000-8000-000000000001' and user_id='10000000-0000-4000-8000-000000000002' returning display_name$$,$$select 'New name'::text$$,'a member can change their own display name');
 select results_eq($$update public.group_members set display_name='Impersonated' where user_id='10000000-0000-4000-8000-000000000001' returning display_name$$,$$select display_name from public.group_members where false$$,'a member cannot change another member display name');
 select throws_ok($$update public.group_members set display_name='   ' where user_id='10000000-0000-4000-8000-000000000002'$$,'23514',null,'blank display names are rejected');
+select is(has_column_privilege('authenticated','public.group_members','active','UPDATE'),false,'members cannot grant their own group access');
+select throws_ok($$update public.group_members set active=false where user_id='10000000-0000-4000-8000-000000000002'$$,'42501',null,'a member cannot change activation status directly');
+set local role service_role;
+update public.group_members set active=false where user_id='10000000-0000-4000-8000-000000000002';
+set local role authenticated;
+select is((select count(*)::int from public.groups),0,'a deactivated member loses group visibility with the existing JWT');
+select is((select count(*)::int from public.ratings),0,'a deactivated member loses ratings visibility');
+select is((select count(*)::int from public.restaurants),0,'a deactivated member loses restaurant visibility');
+select is((select count(*)::int from public.group_members),0,'a deactivated member loses member directory visibility');
+select results_eq($$update public.group_members set display_name='Inactive' where user_id='10000000-0000-4000-8000-000000000002' returning display_name$$,$$select display_name from public.group_members where false$$,'a deactivated member cannot change their name');
+select throws_ok($$insert into public.ratings(group_id,restaurant_id,created_by,visited_on,sauce,texture,portion) values('20000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000002',current_date,3,3,3)$$,'42501',null,'a deactivated member cannot add ratings');
+select lives_ok($$delete from public.ratings$$,'deactivated-member delete requests are harmless');
+set local role service_role;
+select is((select count(*)::int from public.ratings where created_by='10000000-0000-4000-8000-000000000002'),1,'deactivation preserves existing ratings');
+select throws_ok($$update public.group_members set active=false where user_id='10000000-0000-4000-8000-000000000001'$$,'23514',null,'an owner must remain active');
+update public.group_members set active=true where user_id='10000000-0000-4000-8000-000000000002';
+set local role authenticated;
+select is((select count(*)::int from public.ratings),2,'reactivation restores group access');
 select throws_ok($$update public.group_members set role='owner' where user_id='10000000-0000-4000-8000-000000000002'$$,'42501',null,'a member cannot change roles');
 select throws_ok($$insert into public.ratings(group_id,restaurant_id,created_by,visited_on,sauce,texture,portion) values('20000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001',current_date,1,1,1)$$,'42501',null,'a member cannot submit a rating for another user');
 select is(has_function_privilege('authenticated','public.guard_rating_update()','EXECUTE'),false,'authenticated users cannot directly invoke rating update guard functions');

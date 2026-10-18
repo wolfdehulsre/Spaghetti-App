@@ -1,6 +1,17 @@
 // UI copy only: member names, restaurant data and form values are never translated.
 (() => {
   const copy = {
+    'Change member access':'Toegang van lid wijzigen',
+    'Deactivate':'Deactiveren', 'Reactivate':'Heractiveren', 'Deactivated':'Gedeactiveerd',
+    'Deactivating member…':'Lid deactiveren…', 'Reactivating member…':'Lid heractiveren…',
+    'Member deactivated. Their ratings are preserved.':'Lid gedeactiveerd. De beoordelingen blijven bewaard.',
+    'Member reactivated. Their group access is restored.':'Lid geheractiveerd. De toegang tot de groep is hersteld.',
+    'This member is deactivated. Use Reactivate to restore access.':'Dit lid is gedeactiveerd. Gebruik Heractiveren om de toegang te herstellen.',
+    'Deactivate this member? They will lose group access. Their ratings will be preserved.':'Dit lid deactiveren? Het lid verliest toegang tot de groep. De beoordelingen blijven bewaard.',
+    'Reactivate this member and restore their group access?':'Dit lid heractiveren en toegang tot de groep herstellen?',
+    'The account status could not be changed. Try again.':'De accountstatus kon niet worden gewijzigd. Probeer opnieuw.',
+    'You cannot deactivate your own account.':'Je kunt je eigen account niet deactiveren.', 'Group owners cannot be deactivated.':'Groepseigenaars kunnen niet worden gedeactiveerd.',
+    'The membership changed. Refresh and try again.':'Het lidmaatschap is gewijzigd. Vernieuw en probeer opnieuw.',
     'Cancel':'Annuleren', 'Change name':'Naam aanpassen', 'Change your name':'Pas je naam aan', 'Save name':'Naam opslaan',
     'This name appears next to your ratings.':'Deze naam verschijnt bij je beoordelingen.', 'Saving your name…':'Je naam opslaan…',
     'Enter a name between 1 and 80 characters.':'Vul een naam van 1 tot 80 tekens in.', 'Your name could not be saved. Try again.':'Je naam kon niet worden opgeslagen. Probeer opnieuw.',

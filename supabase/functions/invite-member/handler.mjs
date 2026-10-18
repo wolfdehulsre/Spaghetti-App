@@ -14,17 +14,30 @@ export function createInviteHandler(options) {
     let body;
     try { body = await request.json(); } catch { return json(400, { error: "Invalid request." }); }
     const action = body?.action || "invite";
+    const membershipAction = ["deactivate", "reactivate"].includes(action);
+    const targetId = typeof body?.user_id === "string" ? body.user_id : "";
     const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
     const groupId = typeof body?.group_id === "string" ? body.group_id : "";
     const name = typeof body?.display_name === "string" ? body.display_name.trim() : "";
-    if (!["invite", "resend", "list"].includes(action) || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(groupId) || (action !== "list" && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || name.length > 80))) return json(400, { error: "Enter a valid email address and group." });
+    if (!["invite", "resend", "list", "deactivate", "reactivate"].includes(action) || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(groupId) || (membershipAction && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId)) || (!membershipAction && action !== "list" && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || name.length > 80))) return json(400, { error: "Enter a valid email address and group." });
     try {
       const { data: { user }, error: authError } = await options.caller(authorization).auth.getUser();
       if (authError || !user) return json(401, { error: "Your session expired. Sign in again." });
       const admin = options.admin();
-      const permission = await admin.from("group_members").select("role").eq("group_id", groupId).eq("user_id", user.id).maybeSingle();
+      const permission = await admin.from("group_members").select("role,active").eq("group_id", groupId).eq("user_id", user.id).maybeSingle();
       if (permission.error) return json(500, { error: "Could not verify group permissions." });
-      if (permission.data?.role !== "owner") return json(403, { error: "Only a group owner can invite members." });
+      if (permission.data?.role !== "owner" || permission.data?.active === false) return json(403, { error: "Only a group owner can invite members." });
+      if (membershipAction) {
+        if (targetId === user.id) return json(403, { error: "You cannot deactivate your own account." });
+        const target = await admin.from("group_members").select("role,active").eq("group_id", groupId).eq("user_id", targetId).maybeSingle();
+        if (target.error) return json(500, { error: "Could not verify group membership." });
+        if (!target.data) return json(404, { error: "This account is not a member of this group." });
+        if (target.data.role === "owner") return json(403, { error: "Group owners cannot be deactivated." });
+        const result = await admin.from("group_members").update({ active: action === "reactivate" }).eq("group_id", groupId).eq("user_id", targetId).eq("role", "member").select("user_id").maybeSingle();
+        if (result.error) return json(500, { error: "The account status could not be changed. Try again." });
+        if (!result.data) return json(409, { error: "The membership changed. Refresh and try again." });
+        return json(200, { status: action === "reactivate" ? "reactivated" : "deactivated" });
+      }
       if (action !== "list") {
         const { data: allowed, error } = await admin.rpc("consume_invite_rate_limit", { target_user_id: user.id });
         if (error) return json(500, { error: "Could not check invitation limits. Try again later." });
@@ -40,10 +53,10 @@ export function createInviteHandler(options) {
         if (data.users.length < 1000) break;
       }
       if (action === "list") {
-        const { data, error } = await admin.from("group_members").select("user_id,display_name,role,created_at").eq("group_id", groupId).order("created_at");
+        const { data, error } = await admin.from("group_members").select("user_id,display_name,role,active,created_at").eq("group_id", groupId).order("created_at");
         if (error) return json(500, { error: "Could not load members. Try again." });
         const byId = new Map(users.map(u => [u.id, u]));
-        return json(200, { members: data.map(m => ({ display_name: m.display_name, role: m.role, email: byId.get(m.user_id)?.email || "", status: byId.get(m.user_id)?.email_confirmed_at ? "active" : "invited" })) });
+        return json(200, { members: data.map(m => ({ user_id: m.user_id, display_name: m.display_name, role: m.role, email: byId.get(m.user_id)?.email || "", status: m.active === false ? "inactive" : byId.get(m.user_id)?.email_confirmed_at ? "active" : "invited" })) });
       }
       let target = users.find(u => u.email?.toLowerCase() === email);
       let sent = false;
@@ -53,8 +66,9 @@ export function createInviteHandler(options) {
         target = invitation.data.user;
         sent = true;
       }
-      const existing = await admin.from("group_members").select("role").eq("group_id", groupId).eq("user_id", target.id).maybeSingle();
+      const existing = await admin.from("group_members").select("role,active").eq("group_id", groupId).eq("user_id", target.id).maybeSingle();
       if (existing.error) return json(500, { error: "Could not verify group membership. Try again." });
+      if (existing.data?.active === false) return json(200, { status: "inactive_member" });
       // Conflict handling must not downgrade owners or overwrite existing member names.
       const { error } = await admin.from("group_members").upsert({ group_id: groupId, user_id: target.id, role: "member", display_name: name || email.split("@")[0].slice(0, 80) }, { onConflict: "group_id,user_id", ignoreDuplicates: true });
       if (error) {
