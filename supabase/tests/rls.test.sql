@@ -37,7 +37,7 @@ select is((select count(*)::int from public.restaurants),0,'a deactivated member
 select is((select count(*)::int from public.group_members),0,'a deactivated member loses member directory visibility');
 select results_eq($$update public.group_members set display_name='Inactive' where user_id='10000000-0000-4000-8000-000000000002' returning display_name$$,$$select display_name from public.group_members where false$$,'a deactivated member cannot change their name');
 select throws_ok($$insert into public.ratings(group_id,restaurant_id,created_by,visited_on,sauce,texture,portion) values('20000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000002',current_date,3,3,3)$$,'42501',null,'a deactivated member cannot add ratings');
-select lives_ok($delete from public.ratings$,'deactivated-member delete requests are harmless');
+select lives_ok($$delete from public.ratings$$,'deactivated-member delete requests are harmless');
 set local role service_role;
 select is((select count(*)::int from public.ratings where created_by='10000000-0000-4000-8000-000000000002'),1,'deactivation preserves existing ratings');
 select throws_ok($$update public.group_members set active=false where user_id='10000000-0000-4000-8000-000000000001'$$,'23514',null,'an owner must remain active');
