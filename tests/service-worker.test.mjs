@@ -9,8 +9,8 @@ const source = fs.readFileSync(new URL('../service-worker.js', import.meta.url),
 
 async function fixture(t) {
   const server = http.createServer((request, response) => {
-    if (request.url === '/members.html' || request.url === '/index.html') {
-      response.writeHead(308, { Location: request.url === '/members.html' ? '/members' : '/' });
+    if (request.url === '/members.html' || request.url === '/ratings-overview.html' || request.url === '/index.html') {
+      response.writeHead(308, { Location: request.url === '/members.html' ? '/members' : request.url === '/ratings-overview.html' ? '/ratings-overview' : '/' });
       response.end();
     } else {
       response.setHeader('Content-Type', 'text/html');
@@ -48,7 +48,7 @@ async function fixture(t) {
 
 test('cached HTML redirects are safe for browser navigation, including the old members link', async t => {
   const f = await fixture(t);
-  for (const path of ['/members.html', '/index.html']) {
+  for (const path of ['/members.html', '/ratings-overview.html', '/index.html']) {
     const response = await f.request(path);
     assert.ok(response, path + ' is handled');
     assert.equal(response.redirected, false, path + ': browser navigation cannot use a followed redirect response');
@@ -94,4 +94,9 @@ test('authentication, API calls, external assets and non-GET requests are not ca
   assert.equal(f.request('/functions/v1/invite-member'), undefined);
   assert.equal(f.request('/members', { method: 'POST' }), undefined);
   assert.equal(f.request('/members', { url: 'https://other.example/members' }), undefined);
+});
+
+test('overview route and script remain available from the offline shell', async t => {
+  const f=await fixture(t);f.offline();
+  for(const path of ['/ratings-overview','/ratings-overview.html','/ratings-overview.js']){const response=await f.request(path);assert.ok(response);assert.equal(response.status,200);assert.equal(response.redirected,false);}
 });

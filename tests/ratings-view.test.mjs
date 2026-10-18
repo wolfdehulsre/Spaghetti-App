@@ -1,0 +1,36 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const app=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
+const overview=fs.readFileSync(new URL('../ratings-overview.js',import.meta.url),'utf8');
+function fixture(source){
+ const elements=new Map();
+ const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',innerHTML:'',hidden:false,replaceChildren(){this.innerHTML='';},insertAdjacentHTML(_,html){this.innerHTML+=html;}});return elements.get(id);};
+ const context=vm.createContext({window:{APP_CONFIG:{groupId:'group'}},document:{querySelector:get,addEventListener(){}},location:new URL('https://example.com/'),URLSearchParams,Map,console});
+ vm.runInContext(source,context);return {get,context,run:code=>vm.runInContext(code,context)};
+}
+const homeRows=[{id:'mine',restaurant_id:'r1',created_by:'me',date:'2026-10-18',name:'My restaurant',author:'Me',sauce:3,texture:3,portion:3,lat:50,lng:4},{id:'theirs',restaurant_id:'r2',created_by:'friend',date:'2026-10-18',name:'Friend restaurant',author:'Friend',sauce:5,texture:5,portion:5,lat:51,lng:3}];
+test('home list, counters, mean and map all exclude other members',()=>{
+ const f=fixture(app);f.context.rows=homeRows;f.run("user={id:'me'};member={role:'owner'};ratings=rows;paintPins=list=>{globalThis.mapped=list};paint()");
+ assert.equal(f.get('#stat-count').textContent,1);assert.equal(f.get('#stat-average').textContent,'3.0');assert.equal(f.get('#list-count').textContent,'1 plates');assert.equal(f.get('#map-count').textContent,'1 places');assert.match(f.get('#ratings-list').innerHTML,/My restaurant/);assert.doesNotMatch(f.get('#ratings-list').innerHTML,/Friend restaurant/);assert.equal(f.context.mapped.length,1);
+});
+test('member without personal ratings gets zero and no group mean or map pins',()=>{
+ const f=fixture(app);f.context.rows=homeRows;f.run("user={id:'new-member'};ratings=rows;paintPins=list=>{globalThis.mapped=list};paint()");assert.equal(f.get('#stat-count').textContent,0);assert.equal(f.get('#stat-average').textContent,'—');assert.equal(f.context.mapped.length,0);assert.doesNotMatch(f.get('#ratings-list').innerHTML,/Friend restaurant/);
+});
+test('home query filters by both group and authenticated author',async()=>{
+ const f=fixture(app),filters=[];
+ f.context.mock={from(table){const q={select(){return q;},eq(key,value){filters.push([table,key,value]);return q;},order(){return Promise.resolve({data:[],error:null});},then(resolve){resolve({data:table==='group_members'?[{user_id:'me',role:'member',display_name:'Me'}]:[],error:null});}};return q;}};
+ await f.run("db=mock;user={id:'me'};paint=()=>{};load()");assert.ok(filters.some(([t,k,v])=>t==='ratings'&&k==='group_id'&&v==='group'));assert.ok(filters.some(([t,k,v])=>t==='ratings'&&k==='created_by'&&v==='me'));
+});
+function overviewFixture(){return fixture(overview.replace(/\}\)\(\);\s*$/, 'globalThis.testView={render,clear};})();'));}
+const groupRows=homeRows.map(r=>({...r,visited_on:r.date,restaurants:{name:r.name,address:'Belgium',latitude:r.lat,longitude:r.lng}}));
+test('overview includes all authors, group mean and unique mapped places',()=>{
+ const f=overviewFixture();f.context.rows=groupRows;f.run("testView.render(rows,new Map([['me','Me'],['friend','Friend']]))");assert.equal(f.get('#stat-count').textContent,2);assert.equal(f.get('#stat-average').textContent,'4.0');assert.equal(f.get('#map-count').textContent,'2 places');assert.match(f.get('#ratings-list').innerHTML,/Friend restaurant/);assert.match(f.get('#ratings-list').innerHTML,/My restaurant/);
+});
+test('overview counts unmapped ratings but counts a shared restaurant only once on map',()=>{
+ const f=overviewFixture();f.context.rows=[groupRows[0],{...groupRows[1],restaurant_id:'r1'}, {...groupRows[0],restaurants:{name:'Unmapped'}}];f.run('testView.render(rows,new Map())');assert.equal(f.get('#stat-count').textContent,3);assert.equal(f.get('#map-count').textContent,'1 places');
+});
+test('overview escapes names and clears private results on sign-out',()=>{
+ const f=overviewFixture();f.context.rows=[{...groupRows[0],restaurants:{name:'<img src=x onerror=alert(1)>'}}];f.run('testView.render(rows,new Map())');assert.doesNotMatch(f.get('#ratings-list').innerHTML,/<img/);assert.match(f.get('#ratings-list').innerHTML,/&lt;img/);f.run('testView.clear()');assert.equal(f.get('#ratings-list').innerHTML,'');assert.equal(f.get('#application').hidden,true);assert.equal(f.get('#stat-average').textContent,'—');
+});
