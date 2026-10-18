@@ -18,7 +18,7 @@
       options.db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||(session&&current&&session.user.id!==current.userId)){current=null;close();}});
     }
     if($('#change-display-name'))return;
-    $('#account-controls .account-dropdown').insertAdjacentHTML('afterbegin','<button type="button" id="change-display-name">Change name</button>');
+    $('#sign-out').insertAdjacentHTML('beforebegin','<button type="button" id="change-display-name">Change name</button>');
     document.body.insertAdjacentHTML('beforeend','<dialog id="profile-dialog" class="profile-dialog" aria-labelledby="profile-title"><form id="profile-form"><h2 id="profile-title">Change your name</h2><p>This name appears next to your ratings.</p><label class="field" for="profile-name">Display name</label><input id="profile-name" class="profile-name-input" type="text" maxlength="80" required autocomplete="nickname"><p id="profile-status" role="status" aria-live="polite"></p><div class="profile-actions"><button id="profile-cancel" type="button">Cancel</button><button id="profile-save" type="submit">Save name</button></div></form></dialog>');
     dialog=$('#profile-dialog');
     $('#change-display-name').onclick=()=>{
