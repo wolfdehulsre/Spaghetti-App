@@ -1,6 +1,10 @@
 // UI copy only: member names, restaurant data and form values are never translated.
 (() => {
   const copy = {
+    'Move map pin':'Kaartpin verplaatsen', 'Location selected from search':'Locatie gekozen via zoeken',
+    'Pin selected. You can move it on the map.':'Kaartpin gekozen. Je kunt hem op de kaart verplaatsen.',
+    'Choose a valid date that is not in the future.':'Kies een geldige datum die niet in de toekomst ligt.',
+    'Location search is unavailable. Enter an address and choose a spot on the map.':'Locaties zoeken is niet beschikbaar. Vul een adres in en kies een plek op de kaart.',
     'Rating overview':'Ratingoverzicht', 'Every plate,':'Elk bord,', 'around the table.':'samen aan tafel.',
     'Explore the ratings and favourite places shared by your group.':'Ontdek de beoordelingen en favoriete plekken van je groep.',
     'Group rating summary':'Overzicht van de groepsbeoordelingen', 'Group spaghetti map':'Spaghettikaart van de groep',

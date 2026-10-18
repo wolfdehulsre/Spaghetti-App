@@ -45,7 +45,7 @@
             <label class="field grow">Restaurant<input name="restaurant" type="text" placeholder="Where did you eat?" required maxlength="80"></label>
             <label class="field date-field">Date<input name="date" type="date" required></label>
           </div>
-          <label class="field address-field">Restaurant location <span class="optional-label">optional · search for a place or enter a town</span><input id="address-input" name="address" type="search" placeholder="Restaurant name, street, or town" maxlength="140" autocomplete="off" aria-autocomplete="list" aria-controls="place-suggestions"></label>
+          <label class="field address-field">Restaurant location <span class="optional-label">optional · search for a place or enter a town</span><input id="address-input" name="address" type="search" placeholder="Restaurant name, street, or town" maxlength="140" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="place-suggestions"></label>
           <div id="place-suggestions" class="place-suggestions" role="listbox" aria-label="Place suggestions" hidden></div>
           <p id="place-search-status" class="place-search-status" aria-live="polite">Choose a suggestion to set the map pin automatically.</p>
           <input type="hidden" name="lat"><input type="hidden" name="lng">
