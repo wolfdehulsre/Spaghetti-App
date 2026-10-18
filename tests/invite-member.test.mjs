@@ -6,8 +6,9 @@ const group = '20000000-0000-4000-8000-000000000001';
 const origin = 'https://spaghetti-app.pages.dev';
 function fixture(options = {}) {
   const users = [...(options.users || [])];
-  const members = [{ group_id: group, user_id: 'owner', role: options.role || 'owner', display_name: 'Owner' }, ...(options.members || [])];
-  const calls = { emails: 0, authLookups: 0, upserts: [] };
+  const ownerId=options.ownerId||'owner';
+  const members = [{ group_id: group, user_id: ownerId, active: options.ownerActive !== false, role: options.role || 'owner', display_name: 'Owner' }, ...(options.members || [])];
+  const calls = { emails: 0, authLookups: 0, upserts: [], updates: [] };
   let failInsert = options.failInsert;
   const admin = {
     auth: { admin: {
@@ -23,10 +24,10 @@ function fixture(options = {}) {
     } },
     async rpc() { return { data: !options.rateLimited, error: null }; },
     from() {
-      let filters = [], value, upsertOptions;
+      let filters = [], value, upsertOptions, patch;
       const q = {
-        select() { return q; }, eq(k, v) { filters.push([k, v]); return q; },
-        maybeSingle() { return Promise.resolve({ data: members.find(m => filters.every(([k, v]) => m[k] === v)) || null, error: null }); },
+        select() { return q; }, update(value) { patch=value; return q; }, eq(k, v) { filters.push([k, v]); return q; },
+        maybeSingle() { const row=members.find(m=>filters.every(([k,v])=>m[k]===v))||null;if(patch){calls.updates.push({patch,filters});if(options.updateFails)return Promise.resolve({data:null,error:{message:'failed'}});if(row)Object.assign(row,patch);}return Promise.resolve({data:row?{...row}:null,error:null}); },
         order() { return Promise.resolve({ data: members.filter(m => filters.every(([k, v]) => m[k] === v)), error: null }); },
         upsert(v, o) { value = v; upsertOptions = o; return q; },
         then(resolve, reject) {
@@ -41,7 +42,7 @@ function fixture(options = {}) {
       return q;
     },
   };
-  const handle = createInviteHandler({ appOrigin: origin, caller: () => ({ auth: { getUser: async () => ({ data: { user: options.expired ? null : { id: 'owner' } }, error: null }) } }), admin: () => admin });
+  const handle = createInviteHandler({ appOrigin: origin, caller: () => ({ auth: { getUser: async () => ({ data: { user: options.expired ? null : { id: ownerId } }, error: null }) } }), admin: () => admin });
   const request = async (body = {}, headers = {}) => {
     const response = await handle(new Request(origin, { method: 'POST', headers: { Origin: origin, Authorization: 'Bearer fixture', 'Content-Type': 'application/json', ...headers }, body: JSON.stringify({ group_id: group, email: 'friend@example.invalid', ...body }) }));
     return { status: response.status, body: response.headers.get('content-type')?.includes('json') ? await response.json() : await response.text() };
@@ -123,4 +124,36 @@ test('member directory contains only members of the requested group', async () =
   assert.equal(result.body.members.length, 2);
   assert.equal(result.body.members.find(m => m.email === 'friend@example.invalid').status, 'invited');
   assert.ok(!JSON.stringify(result.body).includes('outsider'));
+});
+
+const targetId='10000000-0000-4000-8000-000000000099';
+test('owner can deactivate and reactivate a member without deleting their membership or sending mail',async()=>{
+ const f=fixture({members:[{group_id:group,user_id:targetId,role:'member',display_name:'Friend',active:true}]});
+ assert.equal((await f.request({action:'deactivate',user_id:targetId})).body.status,'deactivated');
+ assert.equal(f.members.find(m=>m.user_id===targetId).active,false);
+ assert.equal((await f.request({action:'reactivate',user_id:targetId})).body.status,'reactivated');
+ assert.equal(f.members.find(m=>m.user_id===targetId).active,true);assert.equal(f.calls.emails,0);assert.equal(f.calls.authLookups,0);
+ assert.deepEqual(f.calls.updates[0].filters,[['group_id',group],['user_id',targetId],['role','member']]);
+});
+test('ordinary and inactive owners cannot change membership status',async()=>{
+ for(const options of [{role:'member'},{ownerActive:false}]){const f=fixture(options);assert.equal((await f.request({action:'deactivate',user_id:targetId})).status,403);assert.equal(f.calls.updates.length,0);}
+});
+test('self and owner deactivation are refused',async()=>{
+ const f=fixture({ownerId:targetId});assert.equal((await f.request({action:'deactivate',user_id:targetId})).status,403);
+ const other=fixture({members:[{group_id:group,user_id:targetId,role:'owner',active:true}]});assert.equal((await other.request({action:'deactivate',user_id:targetId})).status,403);assert.equal(other.calls.updates.length,0);
+});
+test('a target outside the requested group cannot be deactivated',async()=>{
+ const f=fixture({members:[{group_id:'20000000-0000-4000-8000-000000000002',user_id:targetId,role:'member',active:true}]});assert.equal((await f.request({action:'deactivate',user_id:targetId})).status,404);assert.equal(f.calls.updates.length,0);
+});
+test('deactivation database failures report an error and retain active access',async()=>{
+ const f=fixture({updateFails:true,members:[{group_id:group,user_id:targetId,role:'member',active:true}]});assert.equal((await f.request({action:'deactivate',user_id:targetId})).status,500);assert.equal(f.members.find(m=>m.user_id===targetId).active,true);
+});
+test('reinviting an inactive member never silently restores access or sends a mail',async()=>{
+ const f=fixture({users:[{id:targetId,email:'friend@example.invalid'}],members:[{group_id:group,user_id:targetId,role:'member',active:false}]});assert.equal((await f.request()).body.status,'inactive_member');assert.equal(f.calls.emails,0);assert.equal(f.members.find(m=>m.user_id===targetId).active,false);
+});
+test('member directory reports inactive state and includes an action target ID',async()=>{
+ const f=fixture({members:[{group_id:group,user_id:targetId,role:'member',active:false}]});const result=await f.request({action:'list'});const member=result.body.members.find(m=>m.user_id===targetId);assert.equal(member.status,'inactive');
+});
+test('membership status requests require a valid target UUID and authentication',async()=>{
+ const f=fixture();assert.equal((await f.request({action:'deactivate',user_id:'invalid'})).status,400);const expired=fixture({expired:true});assert.equal((await expired.request({action:'deactivate',user_id:targetId})).status,401);
 });

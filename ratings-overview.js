@@ -46,10 +46,10 @@
   async function load(session){
     const current=++generation;
     activeUser=session.user.id;
-    const members=await db.from('group_members').select('user_id,role,display_name').eq('group_id',config.groupId);
+    const members=await db.from('group_members').select('user_id,role,display_name,active').eq('group_id',config.groupId);
     if(current!==generation)return;
     if(members.error)throw Error('Could not load group ratings. Reload and try again.');
-    const member=members.data.find(m=>m.user_id===session.user.id);
+    const member=members.data.find(m=>m.user_id===session.user.id&&m.active!==false);
     if(!member)throw Error('This account is not in this group. Ask the owner for an invitation.');
     const result=await db.from('ratings').select('*,restaurants(name,address,latitude,longitude)').eq('group_id',config.groupId).order('visited_on',{ascending:false});
     if(current!==generation)return;
