@@ -48,7 +48,7 @@ export function createInviteHandler(options) {
       let target = users.find(u => u.email?.toLowerCase() === email);
       let sent = false;
       if (!target) {
-        const invitation = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: options.appOrigin + "/" });
+        const invitation = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: options.appOrigin + "/?auth=invite" });
         if (invitation.error || !invitation.data.user) return json(400, { error: "The invitation could not be sent. Check the email address and try again." });
         target = invitation.data.user;
         sent = true;
@@ -62,7 +62,7 @@ export function createInviteHandler(options) {
         return json(500, { error: "The account exists, but group access could not be added. Retry to finish adding this member." });
       }
       if (action === "resend" && !target.email_confirmed_at && !sent) {
-        const invitation = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: options.appOrigin + "/" });
+        const invitation = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: options.appOrigin + "/?auth=invite" });
         if (invitation.error) return json(502, { error: "Group access is ready, but the invitation email could not be sent. Try resending it." });
         sent = true;
       }

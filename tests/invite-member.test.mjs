@@ -14,7 +14,7 @@ function fixture(options = {}) {
       async listUsers({ page }) { calls.authLookups++; return { data: { users: page === 1 ? [...users] : [] }, error: null }; },
       async inviteUserByEmail(email, params) {
         calls.emails++;
-        assert.equal(params.redirectTo, origin + '/');
+        assert.equal(params.redirectTo, origin + '/?auth=invite');
         if (options.emailFails) return { data: {}, error: new Error('mail failed') };
         let user = users.find(u => u.email === email);
         if (!user) { user = { id: 'new-user', email }; users.push(user); }

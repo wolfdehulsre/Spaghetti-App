@@ -58,6 +58,9 @@ jobs:
       - name: Type-check the invite Edge Function
         run: deno check --node-modules-dir=auto supabase/functions/invite-member/index.ts
 
+      - name: Test authentication screen transitions
+        run: node --test tests/auth-flow.test.mjs
+
       - name: Test invitation retry and authorization behavior
         run: node --test tests/invite-member.test.mjs
 

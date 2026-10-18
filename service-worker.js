@@ -1,4 +1,4 @@
-const CACHE = "bbb-shell-v20";
+const CACHE = "bbb-shell-v21";
 const SHELL = ["/", "/index.html", "/styles.css", "/map.css", "/app.js", "/i18n.js", "/members", "/members.html", "/members.js", "/pwa.js", "/pwa.css", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 // Pages redirects .html URLs to extensionless routes. A followed redirect cannot
