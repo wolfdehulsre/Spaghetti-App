@@ -102,27 +102,245 @@
     'Offline support could not start. The app still works while this page is open.':'Offlinegebruik kon niet starten. De app blijft werken zolang deze pagina open is.',
     'No app update is waiting.':'Er staat geen app-update klaar.', 'Could not apply the app update. Reload and try again.':'De app-update kon niet worden toegepast. Herlaad de pagina en probeer opnieuw.'
   };
+  Object.assign(copy, {"Verifying your email link…":"Je e-maillink controleren…","This email link expired or was already used. Request a new password reset link.":"Deze e-maillink is verlopen of al gebruikt. Vraag een nieuwe herstellink aan.","Invalid login credentials":"Onjuist e-mailadres of wachtwoord","Email not confirmed":"E-mailadres niet bevestigd","Members · Beste Belgische Bolognaise":"Leden · Beste Belgische Bolognaise","Rating overview · Beste Belgische Bolognaise":"Ratingoverzicht · Beste Belgische Bolognaise","Keep your personal ratings of spaghetti bolognaise across Belgium.":"Bewaar je persoonlijke beoordelingen van spaghetti bolognaise in België.","Invalid member.":"Ongeldig lid.","Member not found in this group.":"Lid niet gevonden in deze groep."});
+  Object.assign(copy, {
+    'Could not verify group membership.':'Het groepslidmaatschap kon niet worden gecontroleerd.',
+    'This account is not a member of this group.':'Dit account is geen lid van deze groep.'
+  });
+  const french = {
+  "Could not verify group membership.": "Impossible de vérifier l’adhésion au groupe.",
+  "This account is not a member of this group.": "Ce compte ne fait pas partie de ce groupe.",
+  "Change member access": "Modifier l’accès du membre",
+  "Deactivate": "Désactiver",
+  "Reactivate": "Réactiver",
+  "Deactivated": "Désactivé",
+  "Deactivating member…": "Désactivation du membre…",
+  "Reactivating member…": "Réactivation du membre…",
+  "Member deactivated. Their ratings are preserved.": "Membre désactivé. Ses évaluations sont conservées.",
+  "Member reactivated. Their group access is restored.": "Membre réactivé. Son accès au groupe est rétabli.",
+  "This member is deactivated. Use Reactivate to restore access.": "Ce membre est désactivé. Cliquez sur Réactiver pour rétablir son accès.",
+  "Deactivate this member? They will lose group access. Their ratings will be preserved.": "Désactiver ce membre ? Il perdra l’accès au groupe. Ses évaluations seront conservées.",
+  "Reactivate this member and restore their group access?": "Réactiver ce membre et rétablir son accès au groupe ?",
+  "The account status could not be changed. Try again.": "Le statut du compte n’a pas pu être modifié. Réessayez.",
+  "You cannot deactivate your own account.": "Vous ne pouvez pas désactiver votre propre compte.",
+  "Group owners cannot be deactivated.": "Les propriétaires du groupe ne peuvent pas être désactivés.",
+  "The membership changed. Refresh and try again.": "L’adhésion a changé. Actualisez et réessayez.",
+  "Cancel": "Annuler",
+  "Change name": "Modifier le nom",
+  "Change your name": "Modifier votre nom",
+  "Save name": "Enregistrer le nom",
+  "This name appears next to your ratings.": "Ce nom apparaît à côté de vos évaluations.",
+  "Saving your name…": "Enregistrement de votre nom…",
+  "Enter a name between 1 and 80 characters.": "Saisissez un nom de 1 à 80 caractères.",
+  "Your name could not be saved. Try again.": "Votre nom n’a pas pu être enregistré. Réessayez.",
+  "Move map pin": "Déplacer le repère",
+  "Location selected from search": "Lieu sélectionné dans les résultats",
+  "Pin selected. You can move it on the map.": "Repère sélectionné. Vous pouvez le déplacer sur la carte.",
+  "Choose a valid date that is not in the future.": "Choisissez une date valide qui n’est pas dans le futur.",
+  "Location search is unavailable. Enter an address and choose a spot on the map.": "La recherche de lieux est indisponible. Saisissez une adresse et choisissez un point sur la carte.",
+  "Rating overview": "Vue d’ensemble des évaluations",
+  "Every plate,": "Chaque assiette,",
+  "around the table.": "autour de la table.",
+  "Explore the ratings and favourite places shared by your group.": "Découvrez les évaluations et les lieux favoris partagés par votre groupe.",
+  "Group rating summary": "Résumé des évaluations du groupe",
+  "Group spaghetti map": "Carte des spaghettis du groupe",
+  "Map of Belgium showing group spaghetti ratings": "Carte de Belgique affichant les évaluations de spaghettis du groupe",
+  "Select a marker to see the ratings for that restaurant. Ratings without a location are listed above.": "Sélectionnez un repère pour voir les évaluations du restaurant. Celles sans localisation figurent ci-dessus.",
+  "No ratings yet.": "Aucune évaluation pour le moment.",
+  "Could not load group ratings. Reload and try again.": "Impossible de charger les évaluations du groupe. Rechargez la page et réessayez.",
+  "The map could not load. You can still browse the ratings above.": "La carte n’a pas pu être chargée. Vous pouvez consulter les évaluations ci-dessus.",
+  "Manage members": "Gérer les membres",
+  "Home": "Accueil",
+  "Your people,": "Vos proches,",
+  "at the same table.": "à la même table.",
+  "Invite friends to rate and remember great spaghetti together.": "Invitez des amis à évaluer de bons spaghettis et à en garder le souvenir ensemble.",
+  "Back to ratings": "Retour aux évaluations",
+  "Checking your access…": "Vérification de votre accès…",
+  "MAKE ROOM AT THE TABLE": "FAITES UNE PLACE À TABLE",
+  "Add a member": "Ajouter un membre",
+  "Add member": "Ajouter le membre",
+  "New members receive an email to set their own password. Existing accounts keep their password.": "Les nouveaux membres reçoivent un e-mail pour définir leur mot de passe. Les comptes existants conservent le leur.",
+  "Display name": "Nom affiché",
+  "optional": "facultatif",
+  "How should we call them?": "Comment l’appeler ?",
+  "YOUR SPAGHETTI CLUB": "VOTRE CLUB DE SPAGHETTIS",
+  "Around the table": "Autour de la table",
+  "Refresh": "Actualiser",
+  "Loading members…": "Chargement des membres…",
+  "Owner": "Propriétaire",
+  "Member": "Membre",
+  "Account active": "Compte actif",
+  "Waiting for account activation": "En attente d’activation du compte",
+  "Resend invitation": "Renvoyer l’invitation",
+  "Sending invitation…": "Envoi de l’invitation…",
+  "Adding member…": "Ajout du membre…",
+  "Invitation sent. They can choose a password using the email link.": "Invitation envoyée. Le lien dans l’e-mail permet de choisir un mot de passe.",
+  "This person is already a member. Their access is ready.": "Cette personne est déjà membre. Son accès est prêt.",
+  "Existing account added. They can sign in with their own password.": "Compte existant ajouté. La connexion se fait avec son propre mot de passe.",
+  "Group access is ready. Use Resend invitation to send a fresh activation email.": "L’accès au groupe est prêt. Cliquez sur Renvoyer l’invitation pour envoyer un nouvel e-mail d’activation.",
+  "Member added.": "Membre ajouté.",
+  "The app could not connect. Reload and try again.": "L’application n’a pas pu se connecter. Rechargez la page et réessayez.",
+  "Sign out failed. Try again.": "La déconnexion a échoué. Réessayez.",
+  "Sign in as a group owner first.": "Connectez-vous d’abord en tant que propriétaire du groupe.",
+  "Your session expired. Sign in again.": "Votre session a expiré. Reconnectez-vous.",
+  "Could not verify group permissions.": "Impossible de vérifier les autorisations du groupe.",
+  "Only a group owner can invite members.": "Seul un propriétaire du groupe peut inviter des membres.",
+  "Could not check invitation limits. Try again later.": "Impossible de vérifier les limites d’invitation. Réessayez plus tard.",
+  "You have sent too many invitations. Try again in an hour.": "Vous avez envoyé trop d’invitations. Réessayez dans une heure.",
+  "Enter a valid email address and group.": "Saisissez une adresse e-mail et un groupe valides.",
+  "Could not look up member accounts. Try again.": "Impossible de rechercher les comptes des membres. Réessayez.",
+  "Could not load members. Try again.": "Impossible de charger les membres. Réessayez.",
+  "The invitation could not be sent. Check the email address and try again.": "L’invitation n’a pas pu être envoyée. Vérifiez l’adresse e-mail et réessayez.",
+  "Could not verify group membership. Try again.": "Impossible de vérifier l’adhésion au groupe. Réessayez.",
+  "The account exists, but group access could not be added. Retry to finish adding this member.": "Le compte existe, mais l’accès au groupe n’a pas pu être ajouté. Réessayez pour terminer l’ajout de ce membre.",
+  "Group access is ready, but the invitation email could not be sent. Try resending it.": "L’accès au groupe est prêt, mais l’e-mail d’invitation n’a pas pu être envoyé. Essayez de le renvoyer.",
+  "Could not complete this request. Try again.": "Impossible de terminer cette demande. Réessayez.",
+  "Invalid request.": "Demande invalide.",
+  "SHARED SPAGHETTI CLUB": "CLUB DE SPAGHETTIS PARTAGÉ",
+  "Sign in": "Se connecter",
+  "Only invited members can access shared ratings.": "Seuls les membres invités ont accès aux évaluations partagées.",
+  "THE SEARCH FOR A PERFECT PLATE": "À LA RECHERCHE DE L’ASSIETTE PARFAITE",
+  "Good spaghetti": "De bons spaghettis",
+  "is worth remembering.": "ça ne s’oublie pas.",
+  "Rate the bolognaise, remember the place, and find your Belgian favourite.": "Évaluez la bolognaise, retenez l’adresse et trouvez votre favorite en Belgique.",
+  "Your rating summary": "Résumé de vos évaluations",
+  "plates rated": "assiettes évaluées",
+  "average score": "note moyenne",
+  "YOUR TASTING NOTES": "VOS NOTES DE DÉGUSTATION",
+  "Rate a plate": "Évaluer une assiette",
+  "Restaurant": "Restaurant",
+  "Where did you eat?": "Où avez-vous mangé ?",
+  "Date": "Date",
+  "Restaurant location": "Localisation du restaurant",
+  "optional · search for a place or enter a town": "facultatif · recherchez un lieu ou saisissez une ville",
+  "Restaurant name, street, or town": "Nom du restaurant, rue ou ville",
+  "Place suggestions": "Suggestions de lieux",
+  "Choose a suggestion to set the map pin automatically.": "Choisissez une suggestion pour placer le repère automatiquement.",
+  "Choose spot on map": "Choisir un point sur la carte",
+  "No map pin selected": "Aucun repère sélectionné",
+  "Give each one a score": "Attribuez une note à chaque critère",
+  "1 = needs work · 5 = excellent": "1 = à améliorer · 5 = excellent",
+  "Sauce": "Sauce",
+  "Pasta texture": "Texture des pâtes",
+  "Texture": "Texture",
+  "Portion": "Portion",
+  "Sauce rating": "Note de la sauce",
+  "Pasta texture rating": "Note de la texture des pâtes",
+  "Portion rating": "Note de la portion",
+  "The little extras": "Les petits plus",
+  "Enough cheese": "Assez de fromage",
+  "Hot sauce": "Sauce piquante",
+  "Gratinated": "Gratiné",
+  "Great location": "Cadre agréable",
+  "Warm hospitality": "Accueil chaleureux",
+  "Save this plate": "Enregistrer cette assiette",
+  "Cancel editing": "Annuler la modification",
+  "Ratings are shared with your group.": "Les évaluations sont partagées avec votre groupe.",
+  "YOUR PERSONAL GUIDE": "VOTRE GUIDE PERSONNEL",
+  "Rated & remembered": "Évalué et mémorisé",
+  "WHERE THE GOOD PLATES ARE": "OÙ TROUVER LES BONNES ASSIETTES",
+  "Your spaghetti map": "Votre carte des spaghettis",
+  "Choose “Choose spot on map” while adding a rating, then tap the map to place its pin. You can zoom and drag to find the restaurant.": "Lors de l’ajout d’une évaluation, cliquez sur « Choisir un point sur la carte », puis touchez la carte pour placer le repère. Zoomez et déplacez la carte pour trouver le restaurant.",
+  "Map of Belgium showing your spaghetti ratings": "Carte de Belgique affichant vos évaluations de spaghettis",
+  "Zoom in": "Zoom avant",
+  "Zoom out": "Zoom arrière",
+  "Marker": "Repère",
+  "Close popup": "Fermer la fenêtre",
+  "Map data ©": "Données cartographiques ©",
+  "OpenStreetMap contributors": "Contributeurs OpenStreetMap",
+  "MADE FOR THE LOVE OF A GOOD BOLOGNAISE": "POUR L’AMOUR D’UNE BONNE BOLOGNAISE",
+  "Belgium · one plate at a time": "Belgique · une assiette à la fois",
+  "Beste Belgische Bolognaise home": "Accueil de Beste Belgische Bolognaise",
+  "Account": "Compte",
+  "Language": "Langue",
+  "Invite a friend": "Inviter un ami",
+  "Change password": "Modifier le mot de passe",
+  "Sign out": "Se déconnecter",
+  "Email": "E-mail",
+  "Password": "Mot de passe",
+  "Forgot password?": "Mot de passe oublié ?",
+  "Invite": "Inviter",
+  "Choose a password": "Choisissez un mot de passe",
+  "Set new password": "Définir un nouveau mot de passe",
+  "Activate account": "Activer le compte",
+  "Saving your password…": "Enregistrement de votre mot de passe…",
+  "Password updated. Signing you in…": "Mot de passe modifié. Connexion en cours…",
+  "Loading shared ratings…": "Chargement des évaluations partagées…",
+  "Choose all three scores first.": "Choisissez d’abord les trois notes.",
+  "This account is not in this group. Ask the owner for an invitation.": "Ce compte ne fait pas partie de ce groupe. Demandez une invitation au propriétaire.",
+  "Saving…": "Enregistrement…",
+  "Rating saved and shared.": "Évaluation enregistrée et partagée.",
+  "That reset link expired or was already used. Enter your email and request a new link.": "Ce lien de réinitialisation a expiré ou a déjà été utilisé. Saisissez votre e-mail et demandez un nouveau lien.",
+  "Enter your email above first.": "Saisissez d’abord votre e-mail ci-dessus.",
+  "Sending password reset email…": "Envoi de l’e-mail de réinitialisation…",
+  "Password reset email sent. Check your inbox and open the newest link.": "E-mail de réinitialisation envoyé. Consultez votre boîte de réception et ouvrez le lien le plus récent.",
+  "Invitation sent.": "Invitation envoyée.",
+  "Show on map": "Afficher sur la carte",
+  "Edit": "Modifier",
+  "Remove": "Supprimer",
+  "Your first plate awaits.": "Votre première assiette vous attend.",
+  "Show less": "Afficher moins",
+  "Remove rating?": "Supprimer cette évaluation ?",
+  "Edit your rating": "Modifier votre évaluation",
+  "Pin selected": "Repère sélectionné",
+  "Tap the map to drop a pin": "Touchez la carte pour placer un repère",
+  "The map could not load. You can still enter the address manually.": "La carte n’a pas pu être chargée. Vous pouvez saisir l’adresse manuellement.",
+  "The map is unavailable. Enter the address manually.": "La carte est indisponible. Saisissez l’adresse manuellement.",
+  "A new version is ready.": "Une nouvelle version est disponible.",
+  "Update app": "Mettre à jour l’application",
+  "Offline support is unavailable in this browser.": "Le mode hors ligne est indisponible dans ce navigateur.",
+  "Offline support requires HTTPS (localhost is allowed for development).": "Le mode hors ligne nécessite HTTPS (localhost est autorisé pour le développement).",
+  "The app update failed to install. The current version is still available.": "La mise à jour n’a pas pu être installée. La version actuelle reste disponible.",
+  "Could not check for an app update. Try again when the connection is stable.": "Impossible de vérifier les mises à jour. Réessayez avec une connexion stable.",
+  "Offline support could not start. The app still works while this page is open.": "Le mode hors ligne n’a pas pu démarrer. L’application fonctionne tant que cette page reste ouverte.",
+  "No app update is waiting.": "Aucune mise à jour en attente.",
+  "Could not apply the app update. Reload and try again.": "Impossible d’appliquer la mise à jour. Rechargez la page et réessayez.",
+  "Verifying your email link…": "Vérification de votre lien reçu par e-mail…",
+  "This email link expired or was already used. Request a new password reset link.": "Ce lien a expiré ou a déjà été utilisé. Demandez un nouveau lien de réinitialisation.",
+  "Invalid login credentials": "E-mail ou mot de passe incorrect",
+  "Email not confirmed": "Adresse e-mail non confirmée",
+  "Members · Beste Belgische Bolognaise": "Membres · Beste Belgische Bolognaise",
+  "Rating overview · Beste Belgische Bolognaise": "Évaluations · Beste Belgische Bolognaise",
+  "Keep your personal ratings of spaghetti bolognaise across Belgium.": "Retrouvez vos évaluations personnelles de spaghettis bolognaise en Belgique.",
+  "Invalid member.": "Membre invalide.",
+  "Member not found in this group.": "Membre introuvable dans ce groupe."
+};
   let language = 'en';
-  try { language = localStorage.getItem('bbb-language') || (navigator.language.startsWith('nl') ? 'nl' : 'en'); } catch {}
-  if (!['en', 'nl'].includes(language)) language = 'en';
+  const browserLanguage = navigator.language.toLowerCase().split('-')[0];
+  if (['nl', 'fr'].includes(browserLanguage)) language = browserLanguage;
+  try { language = localStorage.getItem('bbb-language') || language; } catch {}
+  if (!['en', 'nl', 'fr'].includes(language)) language = 'en';
   const originals = new WeakMap();
   const attributes = new WeakMap();
   function translate(text) {
     if (language === 'en') return text.replace(/^1 plates$/, '1 plate').replace(/^1 places$/, '1 place');
     const trimmed = text.trim();
-    let result = copy[trimmed];
+    const catalog = language === 'fr' ? french : copy;
+    let result = Object.hasOwn(catalog, trimmed) ? catalog[trimmed] : undefined;
     if (result === undefined) {
       let match;
-      if ((match = trimmed.match(/^(\d+) plates$/))) result = match[1] + (+match[1] === 1 ? ' bord' : ' borden');
-      else if ((match = trimmed.match(/^(\d+) places$/))) result = match[1] + (+match[1] === 1 ? ' plek' : ' plekken');
-      else if ((match = trimmed.match(/^Show more \((\d+)\)$/))) result = 'Toon meer (' + match[1] + ')';
-      else if (trimmed.startsWith('Save failed: ')) result = trimmed.replace('Save failed: ', 'Opslaan mislukt: ').replace(' Your entries are still here; retry.', ' Je invoer is bewaard; probeer het opnieuw.');
-      else if (trimmed.startsWith('Sign out failed: ')) result = trimmed.replace('Sign out failed: ', 'Afmelden mislukt: ');
+      if ((match = trimmed.match(/^(\d+) plates$/))) result = match[1] + (language === 'fr' ? (+match[1] === 1 ? ' assiette' : ' assiettes') : (+match[1] === 1 ? ' bord' : ' borden'));
+      else if ((match = trimmed.match(/^(\d+) places$/))) result = match[1] + (language === 'fr' ? (+match[1] === 1 ? ' lieu' : ' lieux') : (+match[1] === 1 ? ' plek' : ' plekken'));
+      else if ((match = trimmed.match(/^Show more \((\d+)\)$/))) result = (language === 'fr' ? 'Afficher plus (' : 'Toon meer (') + match[1] + ')';
+      else if (trimmed.startsWith('Save failed: ')) result = trimmed.replace('Save failed: ', language === 'fr' ? 'Échec de l’enregistrement : ' : 'Opslaan mislukt: ').replace(' Your entries are still here; retry.', language === 'fr' ? ' Vos données sont conservées ; réessayez.' : ' Je invoer is bewaard; probeer het opnieuw.');
+      else if (trimmed.startsWith('Sign out failed: ')) result = trimmed.replace('Sign out failed: ', language === 'fr' ? 'Échec de la déconnexion : ' : 'Afmelden mislukt: ');
     }
     return result === undefined ? text : text.replace(trimmed, result);
   }
   function refresh() {
     document.documentElement.lang = language;
+    // Head copy also follows the selected UI language.
+    for (const element of document.querySelectorAll('title,meta[name="description"]')) {
+      const isMeta = element.tagName === 'META';
+      const value = isMeta ? element.content : element.textContent;
+      let record = originals.get(element);
+      if (!record || value !== record.rendered) record = { source: value };
+      record.rendered = translate(record.source);
+      originals.set(element, record);
+      if (value !== record.rendered) {
+        if (isMeta) element.content = record.rendered; else element.textContent = record.rendered;
+      }
+    }
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
       const node = walker.currentNode;
@@ -160,7 +378,7 @@
   }
   window.UI = { t: translate };
   document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.topbar').insertAdjacentHTML('beforeend', '<details class="account-menu language-menu"><summary><span>Language</span></summary><div class="account-dropdown"><div id="language-field"><label for="ui-language">Language</label><select id="ui-language"><option value="nl">Nederlands</option><option value="en">English</option></select></div></div></details>');
+    document.querySelector('.topbar').insertAdjacentHTML('beforeend', '<details class="account-menu language-menu"><summary><span>Language</span></summary><div class="account-dropdown"><div id="language-field"><label for="ui-language">Language</label><select id="ui-language"><option value="nl">Nederlands</option><option value="en">English</option><option value="fr">Français</option></select></div></div></details>');
     document.querySelector('#ui-language').addEventListener('change', event => {
       language = event.target.value;
       try { localStorage.setItem('bbb-language', language); } catch {}
