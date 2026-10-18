@@ -46,6 +46,7 @@
     const { data: member, error } = await db.from('group_members').select('role,display_name').eq('group_id', config.groupId).eq('user_id', session.user.id).maybeSingle();
     if (error) { text('#members-access', 'Could not verify group permissions.'); return; }
     $('#account-name').textContent = member?.display_name || 'Account';
+    if(member)window.ProfileMenu?.mount({db,groupId:config.groupId,userId:session.user.id,name:member.display_name,onSaved:refresh});
     $('#account-controls').hidden = false;
     if (member?.role !== 'owner') { text('#members-access', 'Only a group owner can invite members.'); return; }
     $('#members-access').hidden = true;

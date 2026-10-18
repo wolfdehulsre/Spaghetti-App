@@ -55,6 +55,7 @@
     if(current!==generation)return;
     if(result.error)throw Error('Could not load group ratings. Reload and try again.');
     $('#account-name').textContent=member.display_name;
+    window.ProfileMenu?.mount({db,groupId:config.groupId,userId:session.user.id,name:member.display_name,onSaved:()=>load(session)});
     $('#overview-members').hidden=member.role!=='owner';
     $('#account-controls').hidden=false;
     $('#application').hidden=false;

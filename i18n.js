@@ -1,6 +1,9 @@
 // UI copy only: member names, restaurant data and form values are never translated.
 (() => {
   const copy = {
+    'Cancel':'Annuleren', 'Change name':'Naam aanpassen', 'Change your name':'Pas je naam aan', 'Save name':'Naam opslaan',
+    'This name appears next to your ratings.':'Deze naam verschijnt bij je beoordelingen.', 'Saving your name…':'Je naam opslaan…',
+    'Enter a name between 1 and 80 characters.':'Vul een naam van 1 tot 80 tekens in.', 'Your name could not be saved. Try again.':'Je naam kon niet worden opgeslagen. Probeer opnieuw.',
     'Move map pin':'Kaartpin verplaatsen', 'Location selected from search':'Locatie gekozen via zoeken',
     'Pin selected. You can move it on the map.':'Kaartpin gekozen. Je kunt hem op de kaart verplaatsen.',
     'Choose a valid date that is not in the future.':'Kies een geldige datum die niet in de toekomst ligt.',

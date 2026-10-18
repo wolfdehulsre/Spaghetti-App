@@ -98,5 +98,5 @@ test('authentication, API calls, external assets and non-GET requests are not ca
 
 test('overview route and script remain available from the offline shell', async t => {
   const f=await fixture(t);f.offline();
-  for(const path of ['/ratings-overview','/ratings-overview.html','/ratings-overview.js']){const response=await f.request(path);assert.ok(response);assert.equal(response.status,200);assert.equal(response.redirected,false);}
+  for(const path of ['/ratings-overview','/ratings-overview.html','/ratings-overview.js','/profile-menu.js']){const response=await f.request(path);assert.ok(response);assert.equal(response.status,200);assert.equal(response.redirected,false);}
 });

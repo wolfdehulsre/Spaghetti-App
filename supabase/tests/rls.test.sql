@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(25);
+select plan(28);
 insert into auth.users(id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data) values
 ('10000000-0000-4000-8000-000000000001','authenticated','authenticated','owner@test.invalid','',now(),'{}','{}'),
 ('10000000-0000-4000-8000-000000000002','authenticated','authenticated','member@test.invalid','',now(),'{}','{}'),
@@ -23,6 +23,9 @@ select results_eq($$delete from public.ratings where id='40000000-0000-4000-8000
 select results_eq($$insert into public.restaurants(id,group_id,name,address,created_by) values('30000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000001','Member Trattoria','Brussels','10000000-0000-4000-8000-000000000002') returning id$$,$$select '30000000-0000-4000-8000-000000000002'::uuid$$,'a member can add a restaurant to their group');
 select results_eq($$update public.restaurants set address='Antwerp' where id='30000000-0000-4000-8000-000000000002' returning address$$,$$select 'Antwerp'::text$$,'a member can edit shared restaurant details');
 select results_eq($$delete from public.restaurants where id='30000000-0000-4000-8000-000000000002' returning id$$,$$select id::uuid from public.restaurants where false$$,'a member cannot delete a restaurant');
+select results_eq($$update public.group_members set display_name='New name' where group_id='20000000-0000-4000-8000-000000000001' and user_id='10000000-0000-4000-8000-000000000002' returning display_name$$,$$select 'New name'::text$$,'a member can change their own display name');
+select results_eq($$update public.group_members set display_name='Impersonated' where user_id='10000000-0000-4000-8000-000000000001' returning display_name$$,$$select display_name from public.group_members where false$$,'a member cannot change another member display name');
+select throws_ok($$update public.group_members set display_name='   ' where user_id='10000000-0000-4000-8000-000000000002'$$,'23514',null,'blank display names are rejected');
 select throws_ok($$update public.group_members set role='owner' where user_id='10000000-0000-4000-8000-000000000002'$$,'42501',null,'a member cannot change roles');
 select throws_ok($$insert into public.ratings(group_id,restaurant_id,created_by,visited_on,sauce,texture,portion) values('20000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001',current_date,1,1,1)$$,'42501',null,'a member cannot submit a rating for another user');
 select is(has_function_privilege('authenticated','public.guard_rating_update()','EXECUTE'),false,'authenticated users cannot directly invoke rating update guard functions');
