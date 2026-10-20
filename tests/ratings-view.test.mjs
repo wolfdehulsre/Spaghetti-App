@@ -45,7 +45,7 @@ for(const page of ['home','overview'])for(const separateRecords of [false,true])
  f.context.document.createElement=()=>({});
  let binding;
  f.context.window.RatingNavigation={...f.context.window.RatingNavigation,bind:(...args)=>{binding=args;}};
- f.context.rows=[{...homeRows[0],id:'first',author:'<unsafe>'},{...homeRows[0],id:'second',restaurant_id:separateRecords?'duplicate-record':'r1',date:'2026-10-17'}];
+ f.context.rows=[{...homeRows[0],id:'first',address:'Belgium',author:'<unsafe>'},{...homeRows[0],id:'second',address:'Belgium',restaurant_id:separateRecords?'duplicate-record':'r1',date:'2026-10-17'}];
  if(page==='home')f.run("user={id:'me'};member={role:'member'};ratings=rows;map=L.map().setView();paint()");
  else f.run("testView.render(rows.map(r=>({...r,visited_on:r.date,restaurants:{name:r.name,address:'Belgium',latitude:r.lat,longitude:r.lng}})),new Map([['me','<unsafe>']]))");
  assert.equal(markers.length,1);
@@ -56,6 +56,9 @@ for(const page of ['home','overview'])for(const separateRecords of [false,true])
    assert.match(markers[0].content,new RegExp('data-rating="'+id+'"'));
    assert.match(f.get('#ratings-list').innerHTML,new RegExp('id="rating-'+id+'"'));
  }
+ assert.equal((markers[0].content.match(/class="popup-rating-row"/g)||[]).length,2);
+ assert.equal((markers[0].content.match(/Belgium/g)||[]).length,1);
+ assert.doesNotMatch(markers[0].content,/card-action-button|View this rating/);
  assert.doesNotMatch(markers[0].content,/<unsafe>/);
  assert.match(markers[0].content,/2026-10-17/);
  markers[0].open();assert.equal(binding[0],markers[0]);assert.equal(binding[1],map);

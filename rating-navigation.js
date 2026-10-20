@@ -1,6 +1,17 @@
 (() => {
   let highlighted, timer;
   window.RatingNavigation = {
+    popup(rows) {
+      const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const addresses = [...new Set(rows.map(row => row.address).filter(Boolean))];
+      return '<div class="popup-ratings">' +
+        (addresses.length ? '<div class="popup-location" data-i18n-skip>' + esc(addresses.join(' · ')) + '</div>' : '') +
+        rows.map(row => '<button type="button" class="popup-rating-row" data-rating="' + esc(row.id) + '">' +
+          '<span class="popup-rating-name" data-i18n-skip>' + esc(row.name) + '</span>' +
+          '<span class="popup-rating-score" data-i18n-skip>' + esc(row.score) + '/5 <span aria-hidden="true">›</span></span>' +
+          '<span class="popup-rating-meta" data-i18n-skip>' + esc(row.author) + ' · ' + esc(row.date) + '</span>' +
+          '</button>').join('') + '</div>';
+    },
     groupLocations(rows, coordinates) {
       const restaurants = new Map(), locations = new Map();
       rows.forEach(row => {
