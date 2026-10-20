@@ -75,9 +75,9 @@
   function toggleRatings(){showAllRatings=!showAllRatings;update();}
   function resetFilters(){filters=defaults();writeURL();update(true);}
   function bindFilters(){
-    $('#rating-controls').addEventListener('input',event=>{
-      if(event.target.id!=='filter-q')return;
-      filters.q=event.target.value.trim();writeURL();update(true);
+    $('#rating-search').addEventListener('submit',event=>{
+      event.preventDefault();
+      filters.q=$('#filter-q').value.trim();writeURL();update(true);
     });
     $('#rating-controls').addEventListener('change',event=>{
       const key=event.target.id.replace('filter-','');
