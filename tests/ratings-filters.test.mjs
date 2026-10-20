@@ -11,6 +11,8 @@ function fixture(lang='en'){
  };
  const location=new URL('https://example.com/ratings-overview?unrelated=keep');
  const context=vm.createContext({window:{APP_CONFIG:{},UI:{language:lang,t:s=>s},addEventListener(type,fn){events[type]=fn;}},document:{querySelector:get,addEventListener(type,fn){events[type]=fn;}},location,URLSearchParams,history:{pushState(_,__,url){calls.push(url);location.href=new URL(url,location).href;},replaceState(_,__,url){calls.push(url);location.href=new URL(url,location).href;}}});
+ vm.runInContext(fs.readFileSync(new URL('../rating-navigation.js',import.meta.url),'utf8'),context);
+ vm.runInContext(fs.readFileSync(new URL('../rating-comments.js',import.meta.url),'utf8'),context);
  vm.runInContext(source,context);
  const view=context.view;view.names=new Map([['a','Alice'],['b','Bob']]);view.user='a';
  return {view,context,get,events,calls,location};
