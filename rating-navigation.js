@@ -1,6 +1,20 @@
 (() => {
   let highlighted, timer;
   window.RatingNavigation = {
+    groupLocations(rows, coordinates) {
+      const restaurants = new Map(), locations = new Map();
+      rows.forEach(row => {
+        if (!restaurants.has(row.restaurant_id)) restaurants.set(row.restaurant_id, []);
+        restaurants.get(row.restaurant_id).push(row);
+      });
+      restaurants.forEach(ratings => {
+        const [lat, lng] = coordinates(ratings[0]);
+        const key = Number(lat) + ',' + Number(lng);
+        if (!locations.has(key)) locations.set(key, []);
+        locations.get(key).push(...ratings);
+      });
+      return locations;
+    },
     bind(popup, map, reveal) {
       popup.onclick = event => {
         const button = event.target.closest('[data-rating]');
