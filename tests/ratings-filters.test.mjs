@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const source=fs.readFileSync(new URL('../ratings-overview.js',import.meta.url),'utf8').replace(/\}\)\(\);\s*$/, 'globalThis.view={selectRows,normalize,readURL,writeURL,update,bindFilters,get filters(){return filters;},set rows(v){allRows=v;},set ready(v){ready=v;},set names(v){memberNames=v;},set user(v){activeUser=v;}};})();');
+const source=fs.readFileSync(new URL('../ratings-overview.js',import.meta.url),'utf8').replace(/\}\)\(\);\s*$/, 'globalThis.view={selectRows,normalize,readURL,writeURL,update,bindFilters,toggleRatings,revealRatings,get filters(){return filters;},set rows(v){allRows=v;},set ready(v){ready=v;},set names(v){memberNames=v;},set user(v){activeUser=v;}};})();');
 function fixture(lang='en'){
  const elements=new Map(),events={},calls=[];
  const get=key=>{
@@ -57,4 +57,28 @@ test('filtered list, summary and unique map count stay synchronized through lang
  assert.equal(f.get('#stat-count').textContent,0);assert.equal(f.get('#map-count').textContent,'0 places');assert.match(f.get('#ratings-list').innerHTML,/No ratings found/);
  f.get('#clear-filters').onclick();assert.equal(f.get('#stat-count').textContent,4);assert.equal(f.view.filters.sort,'newest');
  f.view.rows=[];f.view.update();assert.match(f.get('#ratings-list').innerHTML,/No ratings yet/);
+});
+
+test('overview initially shows five, expands all and collapses without changing totals or map',()=>{
+ const f=fixture();f.view.rows=Array.from({length:8},(_,i)=>row(String(i),'a',4,'2026-01-10','Restaurant '+i));f.view.ready=true;
+ const count=()=>[...f.get('#ratings-list').innerHTML.matchAll(/<article /g)].length;
+ f.view.update();assert.equal(count(),5);assert.match(f.get('#ratings-list').innerHTML,/Show more \(3\)/);assert.match(f.get('#ratings-list').innerHTML,/aria-expanded="false"/);
+ assert.equal(f.get('#stat-count').textContent,8);assert.equal(f.get('#map-count').textContent,'1 places');
+ f.view.toggleRatings();assert.equal(count(),8);assert.match(f.get('#ratings-list').innerHTML,/Show less/);assert.match(f.get('#ratings-list').innerHTML,/aria-expanded="true"/);
+ f.context.window.UI.language='nl';f.view.update();assert.equal(count(),8);
+ f.view.toggleRatings();assert.equal(count(),5);
+ f.view.revealRatings();assert.equal(count(),8);
+});
+test('filters search hidden ratings and cap the filtered results, not the source dataset',()=>{
+ const f=fixture();f.view.rows=Array.from({length:12},(_,i)=>row(String(i),'a',4,'2026-01-10',i<6?'Hidden match '+i:'Other '+i));f.view.ready=true;f.view.bindFilters();
+ f.view.update();assert.doesNotMatch(f.get('#ratings-list').innerHTML,/Hidden match 5/);
+ f.location.search='?q=Hidden';f.events.popstate();
+ assert.equal([...f.get('#ratings-list').innerHTML.matchAll(/<article /g)].length,5);
+ assert.equal(f.get('#stat-count').textContent,6);assert.equal(f.get('#map-count').textContent,'1 places');
+ assert.match(f.get('#ratings-list').innerHTML,/Show more \(1\)/);
+ f.view.toggleRatings();assert.match(f.get('#ratings-list').innerHTML,/Hidden match 5/);
+ f.location.search='?q=Hidden+match+5';f.events.popstate();
+ assert.match(f.get('#ratings-list').innerHTML,/Hidden match 5/);assert.doesNotMatch(f.get('#ratings-list').innerHTML,/data-show-more/);
+ assert.equal(f.get('#stat-count').textContent,1);
+ f.get('#clear-filters').onclick();assert.equal([...f.get('#ratings-list').innerHTML.matchAll(/<article /g)].length,5);
 });
