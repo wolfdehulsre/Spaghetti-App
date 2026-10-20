@@ -6,10 +6,10 @@ const source=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
 function fixture(){
  const nodes=new Map(),markers=[];
  const element=()=>({value:'',hidden:false,textContent:'',innerHTML:'',setAttribute(k,v){this[k]=v;},replaceChildren(){this.innerHTML='';},focus(){this.focused=true;},scrollIntoView(){}});
- for(const name of ['#pin-status','#choose-location','#place-suggestions','#address-input','#place-search-status','#save-status','#belgium-map'])nodes.set(name,element());
- const form={elements:{lat:element(),lng:element(),date:element()}};nodes.set('#rating-form',form);
+ for(const name of ['#pin-status','#choose-location','#place-suggestions','#address-input','#place-search-status','#save-status','#belgium-map','#comment-count','#comment-error'])nodes.set(name,element());
+ const form={elements:{lat:element(),lng:element(),date:element(),comment:element()}};nodes.set('#rating-form',form);
  const leaflet={marker(point,options){const m={point,options,removed:false,events:{},addTo(){return this;},on(event,handler){this.events[event]=handler;return this;},remove(){this.removed=true;},getLatLng(){return {lat:this.point[0],lng:this.point[1]};}};markers.push(m);return m;}};
- const context=vm.createContext({window:{APP_CONFIG:{geoapifyApiKey:'test-key'}},L:leaflet,document:{querySelector:s=>nodes.get(s),addEventListener(){}},location:new URL('https://example.com'),URLSearchParams,console});vm.runInContext(source,context);context.mockMap={setView(){}};vm.runInContext('map=mockMap',context);
+ const context=vm.createContext({window:{APP_CONFIG:{geoapifyApiKey:'test-key'}},L:leaflet,document:{querySelector:s=>nodes.get(s),addEventListener(){}},location:new URL('https://example.com'),URLSearchParams,console});vm.runInContext(fs.readFileSync(new URL('../rating-comments.js',import.meta.url),'utf8'),context);vm.runInContext(source,context);context.mockMap={setView(){}};vm.runInContext('map=mockMap',context);
  return {nodes,form,markers,context,run:code=>vm.runInContext(code,context)};
 }
 test('date validation accepts today and the past, rejects future and invalid calendar dates',()=>{
