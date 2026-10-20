@@ -60,6 +60,6 @@ for(const page of ['home','overview'])for(const separateRecords of [false,true])
  assert.equal((markers[0].content.match(/Belgium/g)||[]).length,1);
  assert.doesNotMatch(markers[0].content,/card-action-button|View this rating/);
  assert.doesNotMatch(markers[0].content,/<unsafe>/);
- assert.match(markers[0].content,/2026-10-17/);
+ assert.match(markers[0].content,page==='home'?/2026-10-17/:/10\/17\/2026/);
  markers[0].open();assert.equal(binding[0],markers[0]);assert.equal(binding[1],map);
 });
