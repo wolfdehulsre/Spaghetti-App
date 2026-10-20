@@ -87,9 +87,9 @@ function paintPins(list){
   const groups=window.RatingNavigation.groupLocations(list,r=>[r.lat,r.lng]);
   $('#map-count').textContent=groups.size+' places';
   groups.forEach(rs=>{
-    const r=rs[0],multipleRestaurants=new Set(rs.map(x=>x.restaurant_id)).size>1;
-    const popup='<strong data-i18n-skip>'+esc(r.name)+'</strong><br><span data-i18n-skip>'+esc(r.address)+'</span>'+rs.map(x=>'<div class="popup-rating">'+(multipleRestaurants?'<strong data-i18n-skip>'+esc(x.name)+'</strong><span data-i18n-skip>'+esc(x.address)+'</span>':'')+'<span data-i18n-skip>'+esc(x.author)+' · '+esc(x.date)+' · '+avg(x).toFixed(1)+'/5</span><button type="button" class="card-action-button" data-rating="'+esc(x.id)+'">View this rating</button></div>').join('');
-    const pin=L.marker([r.lat,r.lng]).addTo(map).bindPopup(popup);
+    const r=rs[0];
+    const popup=window.RatingNavigation.popup(rs.map(x=>({id:x.id,name:x.name,address:x.address,author:x.author,date:x.date,score:avg(x).toFixed(1)})));
+    const pin=L.marker([r.lat,r.lng]).addTo(map).bindPopup(popup,{maxWidth:260,maxHeight:220});
     pin.on('popupopen',()=>window.RatingNavigation.bind(pin.getPopup().getElement(),map,()=>{if(!showAllRatings){showAllRatings=true;paint();}}));
     rs.forEach(rating=>pins.set(rating.restaurant_id,pin));
   });

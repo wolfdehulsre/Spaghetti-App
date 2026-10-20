@@ -2,8 +2,15 @@
 
 
 .place-suggestion{min-height:56px;padding:12px 14px;font-family:inherit;color:var(--ink)}.place-suggestion strong{font-size:12px;font-weight:600}.place-suggestion span{font-size:11px;line-height:1.5;color:var(--muted)}.place-suggestion:hover,.place-suggestion:focus-visible{background:#edf0e9;box-shadow:inset 3px 0 var(--green)}.place-suggestions{max-height:290px;overflow-y:auto;border-color:var(--line);background:var(--cream)}.pin-controls [hidden]{display:none!important}
-.popup-rating{display:grid;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
-.popup-rating .card-action-button{justify-self:start;min-height:44px}
+.popup-ratings{width:min(240px,52vw)}
+.popup-location{padding:0 0 8px;color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+.popup-rating-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;width:100%;min-height:48px;margin:0;padding:9px 0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink);font:inherit;line-height:1.4;text-align:left;cursor:pointer}
+.popup-rating-name{font-weight:600;overflow-wrap:anywhere}
+.popup-rating-score{color:var(--green);white-space:nowrap;font-weight:600}
+.popup-rating-score [aria-hidden]{margin-left:4px;font-size:16px;line-height:1}
+.popup-rating-meta{grid-column:1/-1;color:var(--muted);font-size:10px;overflow-wrap:anywhere}
+.popup-rating-row:hover,.popup-rating-row:focus-visible{background:#f3f5f0}
+.popup-rating-row:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
 .rating-card{scroll-margin-block:24px}
 .rating-card.rating-highlight{outline:2px solid var(--green);outline-offset:6px;background:var(--cream)}
 .rating-card:focus-visible{outline:2px solid var(--green);outline-offset:6px}
