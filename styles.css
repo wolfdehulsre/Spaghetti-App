@@ -30,3 +30,14 @@
 .overview-content .show-more-button{grid-column:1/-1}
 
 #rating-search,.rating-sort{margin-top:16px}.rating-search-row{display:flex;gap:10px}.rating-search-row input{flex:1}.rating-search-row button{min-height:44px;padding:8px 14px;border:1px solid var(--green);border-radius:4px;background:var(--green);color:white;font:inherit;cursor:pointer}
+
+.photo-field { margin: 1rem 0; }
+.photo-preview { width: min(100%,300px); height: 200px; object-fit: contain; border-radius: 12px; }
+.rating-photo-button { display: block; position: relative; width: 100%; padding: 0; margin: 1rem 0; border: 0; background: transparent; cursor: zoom-in; }
+.rating-photo { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 12px; }
+.photo-load-status { display: block; padding: .5rem; }
+.photo-load-status[hidden] { display: none; }
+.photo-dialog { max-width: 95vw; max-height: 95vh; border: 0; border-radius: 16px; padding: 1rem; }
+.photo-dialog::backdrop { background: rgb(0 0 0 / 75%); }
+.photo-dialog img { display: block; max-width: 85vw; max-height: 80vh; object-fit: contain; }
+.photo-dialog button { display: block; margin: 0 0 .5rem auto; cursor: pointer; }

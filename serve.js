@@ -10,6 +10,7 @@ const files = new Map([
   ['/styles.css', ['styles.css', 'text/css; charset=utf-8']],
   ['/map.css', ['map.css', 'text/css; charset=utf-8']],
   ['/rating-comments.js', ['rating-comments.js', 'text/javascript; charset=utf-8']],
+  ['/rating-photos.js', ['rating-photos.js', 'text/javascript; charset=utf-8']],
   ['/app.js', ['app.js', 'text/javascript; charset=utf-8']],
   ['/members.html', ['members.html', 'text/html; charset=utf-8']],
   ['/members', ['members.html', 'text/html; charset=utf-8']],

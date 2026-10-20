@@ -53,3 +53,62 @@ Run `supabase test db` for the pgTAP RLS checks in `supabase/tests/rls.test.sql`
 Owners can open **Manage members** from the header dropdown to visit `/members`. The page shows account activation status, adds new or existing accounts to the group, and can resend invitations for accounts awaiting activation. New members choose their own password from the invitation email. Repeating an invitation does not duplicate memberships or change existing passwords, names, or owner roles. The logo and back link return to the home page.
 
 Run `node --test tests/invite-member.test.mjs` for invite retry, membership recovery, role checks, rate limiting and directory isolation tests. After changing the function, deploy both `index.ts` and `handler.mjs` as the `invite-member` Edge Function with JWT verification enabled. No schema migration is needed for this fix.
+
+## Rating photos
+
+Each rating can have one optional photo. JPEG/PNG/WebP inputs are limited to
+10,000,000 bytes, decoded with orientation, resized to at most 1,200 pixels on the
+longest side without enlargement, and re-encoded as JPEG (stripping source EXIF,
+including GPS). The target is at most 200,000 bytes; 300,000 bytes is the hard
+stored limit. Only this version is uploaded. Originals are never stored.
+
+Photos are private to active members of the rating's group. Only the creator can
+change the photo; existing owner permissions still allow deletion of the entire
+rating. Signed read links expire after five minutes; previously issued links can
+remain valid during that window after membership changes. The service worker
+never caches Storage responses. Images are loaded on approach to the viewport,
+with a five-minute browser cache and a new immutable path for each replacement.
+
+Deployment order (no paid plan or image transformation service is required):
+
+1. Apply the committed `rating_photos` migration using the existing Supabase
+   migration workflow. It creates the private `rating-photos` bucket, limits,
+   ownership-checked RPC, and RLS policies. Deploy the database before the UI.
+2. Deploy `supabase/functions/cleanup-rating-photos`. Keep JWT verification on.
+   Set a randomly generated `PHOTO_CLEANUP_SECRET` in the function's secrets.
+3. In Supabase Vault, create `photo_project_url` (the project's HTTPS URL),
+   `photo_anon_key` (its **legacy JWT anon key**, not an `sb_publishable_` key),
+   and `photo_cleanup_secret` (the same random value as the function secret).
+   Keep the secret out of source control and browser configuration.
+4. Run `supabase/ops/schedule-photo-cleanup.sql` in the SQL editor as postgres.
+   It installs a job every 15 minutes, using Vault rather than embedding secrets
+   in the cron command. Monitor Cron job runs and the function's HTTP status.
+5. Deploy the static app and test upload, replacement and removal with a member
+   account. Check Storage usage in the organization's Usage dashboard.
+
+A reservation allows only one in-flight upload per rating for 15 minutes. Failed
+uploads preserve the saved rating and the previous photo. Save retries target the
+same rating; the original submission key also handles a lost insert response.
+Deleting a rating (including a restaurant/group cascade) queues its files in the
+same database transaction. Cleanup expires abandoned reservations after an hour,
+waits at least an hour after queueing a file, deletes through the **Storage API**,
+and acknowledges only successful deletion. Errors leave the queue for the next
+run. Cleanup must be deployed and scheduled: without it, unused files continue to
+consume storage. At most 100 files are removed per invocation; monitor the queue
+if deletion volume exceeds 400 per hour. Never delete `storage.objects` rows with
+SQL to remove actual files.
+
+The 1 GB Free storage allowance is cumulative and shared with other assets.
+At 150 KB per photo, 1,000 photographed ratings use roughly 150 MB. Downloads
+consume cached or uncached egress; use the Usage dashboard to track both budgets.
+Set an operational alert before reaching 80% of either quota. There is no
+automatic subscription upgrade or purchase in this feature.
+
+Validation: `node --test tests/*.test.mjs`, `npm run build`, and
+`npm run test:rls` against the disposable local Supabase stack. The photo database
+tests cover creator-only writes, shared reads, outsiders/deactivated members,
+reservation conflicts, missing uploads, replacement failure, expiry and cascading
+cleanup. `validation/rating-photos.browser.cjs` runs browser compression, preview,
+failed-upload retry without duplicate ratings, dialog, removal and cancellation
+checks using mocked backend calls and a real browser image encoder. Install
+Playwright outside the repository or use `NODE_PATH` to an existing installation.
