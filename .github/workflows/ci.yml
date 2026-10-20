@@ -47,6 +47,7 @@ jobs:
           node --check members.js
           node --check profile-menu.js
           node --check ratings-overview.js
+          node --check rating-photos.js
           node --check rating-comments.js
           node --check rating-navigation.js
           node --check pwa.js
@@ -60,13 +61,13 @@ jobs:
           deno-version: 2.9.7
 
       - name: Type-check the invite Edge Function
-        run: deno check --node-modules-dir=auto supabase/functions/invite-member/index.ts
+        run: deno check --node-modules-dir=auto supabase/functions/invite-member/index.ts supabase/functions/cleanup-rating-photos/index.ts
 
       - name: Test authentication screen transitions
-        run: node --test tests/auth-flow.test.mjs tests/ratings-view.test.mjs tests/ratings-filters.test.mjs tests/rating-navigation.test.mjs tests/rating-form.test.mjs tests/rating-comments.test.mjs tests/profile-menu.test.mjs tests/i18n.test.mjs
+        run: node --test tests/auth-flow.test.mjs tests/ratings-view.test.mjs tests/ratings-filters.test.mjs tests/rating-navigation.test.mjs tests/rating-form.test.mjs tests/rating-comments.test.mjs tests/rating-photos.test.mjs tests/profile-menu.test.mjs tests/i18n.test.mjs
 
       - name: Test invitation retry and authorization behavior
-        run: node --test tests/invite-member.test.mjs
+        run: node --test tests/invite-member.test.mjs tests/photo-cleanup.test.mjs
 
       - name: Test cached navigation and hosting redirects
         run: node --test tests/service-worker.test.mjs

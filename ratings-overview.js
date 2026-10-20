@@ -102,7 +102,7 @@
   }
 
   function clear(){
-    generation++;
+    generation++;window.RatingPhotos?.clear();
     ready=false;showAllRatings=false;allRows=[];memberNames.clear();
     filters=defaults();
     $('#filter-member').innerHTML='<option data-i18n-option value="">All members</option><option data-i18n-option value="me">Only my ratings</option>';
@@ -123,9 +123,10 @@
     const visible=showAllRatings?rows:rows.slice(0,5);
     $('#ratings-list').innerHTML=visible.map(r=>{
       const restaurant=r.restaurants||{};
-      return '<article class="rating-card" id="rating-'+esc(r.id)+'" tabindex="-1"><div class="card-top"><div><div class="card-name" data-i18n-skip>'+esc(restaurant.name)+'</div><div class="card-date"><span data-i18n-skip>'+esc(dateLabel(r.visited_on))+' · '+esc(names.get(r.created_by)||t('Member'))+'</span></div><div class="card-location" data-i18n-skip>'+esc(restaurant.address)+'</div></div><div class="card-score">'+number(average(r))+'<small> / 5</small></div></div><div class="score-summary"><span>Sauce <b>'+r.sauce+'/5</b></span><span>Texture <b>'+r.texture+'/5</b></span><span>Portion <b>'+r.portion+'/5</b></span></div>'+window.RatingComments.render(r.comment,r.id)+ (restaurant.latitude!=null&&restaurant.longitude!=null?'<div class="card-actions"><button type="button" class="card-action-button" data-map="'+esc(r.restaurant_id)+'">Show on map</button></div>':'')+'</article>';
+      return '<article class="rating-card" id="rating-'+esc(r.id)+'" tabindex="-1"><div class="card-top"><div><div class="card-name" data-i18n-skip>'+esc(restaurant.name)+'</div><div class="card-date"><span data-i18n-skip>'+esc(dateLabel(r.visited_on))+' · '+esc(names.get(r.created_by)||t('Member'))+'</span></div><div class="card-location" data-i18n-skip>'+esc(restaurant.address)+'</div></div><div class="card-score">'+number(average(r))+'<small> / 5</small></div></div>'+(window.RatingPhotos?.markup(r.rating_photos?.path,r.id)||'')+'<div class="score-summary"><span>Sauce <b>'+r.sauce+'/5</b></span><span>Texture <b>'+r.texture+'/5</b></span><span>Portion <b>'+r.portion+'/5</b></span></div>'+window.RatingComments.render(r.comment,r.id)+ (restaurant.latitude!=null&&restaurant.longitude!=null?'<div class="card-actions"><button type="button" class="card-action-button" data-map="'+esc(r.restaurant_id)+'">Show on map</button></div>':'')+'</article>';
     }).join('')||(total?'<div class="empty-state"><strong>No ratings found.</strong><button type="button" data-clear-filters>Clear filters</button></div>':'<div class="empty-state"><strong>No ratings yet.</strong></div>');
     if(rows.length>5)$('#ratings-list').innerHTML+='<button type="button" class="show-more-button" data-show-more aria-expanded="'+showAllRatings+'">'+(showAllRatings?'Show less':'Show more ('+(rows.length-5)+')')+'</button>';
+    window.RatingPhotos?.hydrate(db,$('#ratings-list'));
     const mapped=rows.filter(r=>r.restaurants?.latitude!=null&&r.restaurants?.longitude!=null);
     const places=window.RatingNavigation.groupLocations(mapped,r=>[r.restaurants.latitude,r.restaurants.longitude]);
     $('#map-count').textContent=places.size+' places';
@@ -154,7 +155,7 @@
     if(members.error)throw Error('Could not load group ratings. Reload and try again.');
     const member=members.data.find(m=>m.user_id===session.user.id&&m.active!==false);
     if(!member)throw Error('This account is not in this group. Ask the owner for an invitation.');
-    const result=await db.from('ratings').select('*,restaurants(name,address,latitude,longitude)').eq('group_id',config.groupId).order('visited_on',{ascending:false});
+    const result=await db.from('ratings').select('*,restaurants(name,address,latitude,longitude),rating_photos(path)').eq('group_id',config.groupId).order('visited_on',{ascending:false});
     if(current!==generation)return;
     if(result.error)throw Error('Could not load group ratings. Reload and try again.');
     $('#account-name').textContent=member.display_name;

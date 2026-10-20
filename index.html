@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="map.css"><link rel="stylesheet" href="/pwa.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/runtime-config.js"></script><script src="/i18n.js" defer></script><script src="/rating-comments.js" defer></script><script src="/profile-menu.js" defer></script><script src="/rating-navigation.js" defer></script><script src="app.js" defer></script><script src="/pwa.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/runtime-config.js"></script><script src="/i18n.js" defer></script><script src="/rating-photos.js" defer></script><script src="/rating-comments.js" defer></script><script src="/profile-menu.js" defer></script><script src="/rating-navigation.js" defer></script><script src="app.js" defer></script><script src="/pwa.js" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -71,6 +71,13 @@
             <textarea id="rating-comment" name="comment" rows="3" placeholder="Would you like to explain your rating?" aria-describedby="comment-help comment-count comment-error"></textarea>
             <div class="comment-meta"><span id="comment-help">Maximum 500 characters.</span><output id="comment-count" for="rating-comment" aria-label="Comment character count" data-i18n-skip>0/500</output></div>
             <p id="comment-error" class="comment-error" aria-live="polite" hidden></p>
+          </div>
+          <div class="photo-field">
+            <label class="field">Photo <span class="optional-label">optional · one photo per rating</span><input id="rating-photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="photo-help photo-status"></label>
+            <p id="photo-help" class="optional-label">JPEG, PNG or WebP, up to 10 MB. Photos are reduced before uploading.</p>
+            <img id="photo-preview" class="photo-preview" width="300" height="200" alt="Selected photo" hidden>
+            <button id="remove-photo" class="card-action-button" type="button" hidden>Remove photo</button>
+            <p id="photo-status" role="status" aria-live="polite"></p>
           </div>
           <button class="submit-button" type="submit">Save this plate <span aria-hidden="true">↗</span></button>
           <button id="cancel-edit" class="cancel-edit" type="button" hidden>Cancel editing</button>

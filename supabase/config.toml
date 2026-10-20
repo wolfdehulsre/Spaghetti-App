@@ -1,3 +1,6 @@
 [functions.invite-member]
 verify_jwt = true
 
+
+[functions.cleanup-rating-photos]
+verify_jwt = true
