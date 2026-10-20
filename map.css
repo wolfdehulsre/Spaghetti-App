@@ -2,3 +2,8 @@
 
 
 .place-suggestion{min-height:56px;padding:12px 14px;font-family:inherit;color:var(--ink)}.place-suggestion strong{font-size:12px;font-weight:600}.place-suggestion span{font-size:11px;line-height:1.5;color:var(--muted)}.place-suggestion:hover,.place-suggestion:focus-visible{background:#edf0e9;box-shadow:inset 3px 0 var(--green)}.place-suggestions{max-height:290px;overflow-y:auto;border-color:var(--line);background:var(--cream)}.pin-controls [hidden]{display:none!important}
+.popup-rating{display:grid;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.popup-rating .card-action-button{justify-self:start;min-height:44px}
+.rating-card{scroll-margin-block:24px}
+.rating-card.rating-highlight{outline:2px solid var(--green);outline-offset:6px;background:var(--cream)}
+.rating-card:focus-visible{outline:2px solid var(--green);outline-offset:6px}
