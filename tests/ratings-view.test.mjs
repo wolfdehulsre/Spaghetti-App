@@ -34,3 +34,26 @@ test('overview counts unmapped ratings but counts a shared restaurant only once 
 test('overview escapes names and clears private results on sign-out',()=>{
  const f=overviewFixture();f.context.rows=[{...groupRows[0],restaurants:{name:'<img src=x onerror=alert(1)>'}}];f.run('testView.render(rows,new Map())');assert.doesNotMatch(f.get('#ratings-list').innerHTML,/<img/);assert.match(f.get('#ratings-list').innerHTML,/&lt;img/);f.run('testView.clear()');assert.equal(f.get('#ratings-list').innerHTML,'');assert.equal(f.get('#application').hidden,true);assert.equal(f.get('#stat-average').textContent,'—');
 });
+
+for(const page of ['home','overview'])test(`${page} shared pin has a separate button for each rating`,()=>{
+ const f=page==='home'?fixture(app):overviewFixture(),markers=[];
+ const map={invalidateSize(){}};
+ f.context.window.L=f.context.L={map:()=>({setView:()=>map}),tileLayer:()=>({addTo(){}}),marker:()=>{
+   const marker={addTo(){return this;},bindPopup(content){this.content=typeof content==='string'?content:content.innerHTML;return this;},on(event,fn){this.open=fn;return this;},getPopup(){return {getElement:()=>this};},remove(){}};
+   markers.push(marker);return marker;
+ }};
+ f.context.document.createElement=()=>({});
+ let binding;
+ f.context.window.RatingNavigation={bind:(...args)=>{binding=args;}};
+ f.context.rows=[{...homeRows[0],id:'first',author:'<unsafe>'},{...homeRows[0],id:'second',date:'2026-10-17'}];
+ if(page==='home')f.run("user={id:'me'};member={role:'member'};ratings=rows;map=L.map().setView();paint()");
+ else f.run("testView.render(rows.map(r=>({...r,visited_on:r.date,restaurants:{name:r.name,address:'Belgium',latitude:r.lat,longitude:r.lng}})),new Map([['me','<unsafe>']]))");
+ assert.equal(markers.length,1);
+ for(const id of ['first','second']){
+   assert.match(markers[0].content,new RegExp('data-rating="'+id+'"'));
+   assert.match(f.get('#ratings-list').innerHTML,new RegExp('id="rating-'+id+'"'));
+ }
+ assert.doesNotMatch(markers[0].content,/<unsafe>/);
+ assert.match(markers[0].content,/2026-10-17/);
+ markers[0].open();assert.equal(binding[0],markers[0]);assert.equal(binding[1],map);
+});
