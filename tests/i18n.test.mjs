@@ -6,12 +6,12 @@ const source=fs.readFileSync(new URL('../i18n.js',import.meta.url),'utf8');
 function fixture({saved=null,browser='en',unavailable=false}={}){
   const callbacks={}, nodes=[], fields=[], head=[];
   const select={value:'',addEventListener(type,fn){callbacks.change=fn;}};
-  const document={documentElement:{},body:{},addEventListener(type,fn){callbacks[type]=fn;},
+  const document={documentElement:{},body:{},dispatchEvent(){},addEventListener(type,fn){callbacks[type]=fn;},
     createTreeWalker(){let index=0;return {nextNode(){this.currentNode=nodes[index++];return !!this.currentNode;}};},
     querySelectorAll(selector){return selector.startsWith('title,')?head:fields;},
     querySelector(selector){return selector==='.topbar'?{insertAdjacentHTML(position,html){callbacks.menu=html;}}:selector==='#ui-language'?select:null;}};
   const storage={getItem(){if(unavailable)throw Error('blocked');return saved;},setItem(key,value){saved=value;}};
-  const context=vm.createContext({window:{},document,localStorage:storage,navigator:{language:browser},NodeFilter:{SHOW_TEXT:4},MutationObserver:class{observe(){}}});
+  const context=vm.createContext({window:{},document,Event,localStorage:storage,navigator:{language:browser},NodeFilter:{SHOW_TEXT:4},MutationObserver:class{observe(){}}});
   vm.runInContext(source.replace("  let language = 'en';","  globalThis.catalogs={nl:copy,fr:french};\n  let language = 'en';"),context);
   const change=lang=>{select.value=lang;callbacks.change({target:select});};
   return {context,document,nodes,fields,head,callbacks,change,get saved(){return saved;},t:text=>context.window.UI.t(text)};
@@ -68,4 +68,17 @@ test('counts, expansion controls and error wrappers translate in all three langu
   }
   f.change('fr');assert.equal(f.t('Save failed: Network Your entries are still here; retry.'),'Échec de l’enregistrement : Network Vos données sont conservées ; réessayez.');
   assert.equal(f.t('Sign out failed: Network'),'Échec de la déconnexion : Network');
+});
+
+test('rating filter copy, result counts and language notifications cover all languages',()=>{
+  const f=fixture(),notifications=[];
+  f.document.dispatchEvent=event=>notifications.push(event.type);
+  f.callbacks.DOMContentLoaded();
+  for(const [lang,label,count] of [['nl','Alleen mijn ratings','2 van 3 beoordelingen'],['fr','Mes évaluations uniquement','2 sur 3 évaluations'],['en','Only my ratings','2 of 3 ratings']]){
+    f.change(lang);
+    assert.equal(f.context.window.UI.language,lang);
+    assert.equal(f.t('Only my ratings'),label);
+    assert.equal(f.t('{shown} of {total} ratings').replace('{shown}',2).replace('{total}',3),count);
+  }
+  assert.deepEqual(notifications,['languagechange','languagechange','languagechange']);
 });

@@ -308,6 +308,8 @@
 };
   Object.assign(copy, {"Comment (optional)": "Opmerking (optioneel)", "Would you like to explain your rating?": "Wil je je beoordeling toelichten?", "Maximum 500 characters.": "Maximaal 500 tekens.", "Your comment cannot exceed 500 characters.": "Je opmerking mag maximaal 500 tekens bevatten.", "Read more": "Meer lezen", "Show less comment": "Minder tonen", "Comment character count": "Aantal tekens in de opmerking"});
   Object.assign(french, {"Comment (optional)": "Commentaire (facultatif)", "Would you like to explain your rating?": "Souhaitez-vous préciser votre évaluation ?", "Maximum 500 characters.": "Maximum 500 caractères.", "Your comment cannot exceed 500 characters.": "Votre commentaire ne peut pas dépasser 500 caractères.", "Read more": "Lire la suite", "Show less comment": "Afficher moins", "Comment character count": "Nombre de caractères du commentaire"});
+  Object.assign(copy, {"Search ratings": "Zoek beoordelingen", "Restaurant name or address": "Restaurantnaam of adres", "Sort by": "Sorteren op", "Newest visit first": "Nieuwste bezoek eerst", "Oldest visit first": "Oudste bezoek eerst", "Highest score first": "Hoogste score eerst", "Lowest score first": "Laagste score eerst", "Restaurant name A–Z": "Restaurantnaam A–Z", "Filters": "Filters", "Reviewer": "Beoordelaar", "All members": "Alle leden", "Only my ratings": "Alleen mijn ratings", "Minimum average score": "Minimale gemiddelde score", "All scores": "Alle scores", "From date": "Vanaf datum", "To date": "Tot en met datum", "This year": "Dit jaar", "Last 3 months": "Afgelopen 3 maanden", "Clear filters": "Wis filters", "No ratings found.": "Geen beoordelingen gevonden.", "{shown} of {total} rating": "{shown} van {total} beoordeling", "{shown} of {total} ratings": "{shown} van {total} beoordelingen", "Active filters": "Actieve filters"});
+  Object.assign(french, {"Search ratings": "Rechercher des évaluations", "Restaurant name or address": "Nom du restaurant ou adresse", "Sort by": "Trier par", "Newest visit first": "Visite la plus récente", "Oldest visit first": "Visite la plus ancienne", "Highest score first": "Meilleure note", "Lowest score first": "Note la plus basse", "Restaurant name A–Z": "Nom du restaurant A–Z", "Filters": "Filtres", "Reviewer": "Auteur", "All members": "Tous les membres", "Only my ratings": "Mes évaluations uniquement", "Minimum average score": "Note moyenne minimale", "All scores": "Toutes les notes", "From date": "Depuis le", "To date": "Jusqu’au", "This year": "Cette année", "Last 3 months": "Les 3 derniers mois", "Clear filters": "Effacer les filtres", "No ratings found.": "Aucune évaluation trouvée.", "{shown} of {total} rating": "{shown} sur {total} évaluation", "{shown} of {total} ratings": "{shown} sur {total} évaluations", "Active filters": "Filtres actifs"});
   let language = 'en';
   const browserLanguage = navigator.language.toLowerCase().split('-')[0];
   if (['nl', 'fr'].includes(browserLanguage)) language = browserLanguage;
@@ -348,7 +350,7 @@
     while (walker.nextNode()) {
       const node = walker.currentNode;
       // Exclude all user-controlled fields and third-party map content.
-      if (node.parentElement.closest('script,style,textarea,option,[data-i18n-skip],.card-name,.card-date,.card-location,#account-name,.leaflet-pane,.leaflet-control,#place-suggestions')) continue;
+      if (node.parentElement.closest('script,style,textarea,option:not([data-i18n-option]),[data-i18n-skip],.card-name,.card-date,.card-location,#account-name,.leaflet-pane,.leaflet-control,#place-suggestions')) continue;
       let record = originals.get(node);
       if (!record || node.nodeValue !== record.rendered) record = { source: node.nodeValue };
       record.rendered = translate(record.source);
@@ -379,13 +381,14 @@
       if (fallback.hidden !== !account.hidden) fallback.hidden = !account.hidden;
     }
   }
-  window.UI = { t: translate };
+  window.UI = { t: translate, get language() { return language; } };
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.topbar').insertAdjacentHTML('beforeend', '<details class="account-menu language-menu"><summary><span>Language</span></summary><div class="account-dropdown"><div id="language-field"><label for="ui-language">Language</label><select id="ui-language"><option value="nl">Nederlands</option><option value="en">English</option><option value="fr">Français</option></select></div></div></details>');
     document.querySelector('#ui-language').addEventListener('change', event => {
       language = event.target.value;
       try { localStorage.setItem('bbb-language', language); } catch {}
       refresh();
+      document.dispatchEvent(new Event("languagechange"));
     });
     refresh();
     new MutationObserver(refresh).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['placeholder', 'aria-label', 'title', 'alt', 'hidden'] });
