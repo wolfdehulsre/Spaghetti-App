@@ -82,3 +82,25 @@ test('filters search hidden ratings and cap the filtered results, not the source
  assert.equal(f.get('#stat-count').textContent,1);
  f.get('#clear-filters').onclick();assert.equal([...f.get('#ratings-list').innerHTML.matchAll(/<article /g)].length,5);
 });
+
+test('search waits for form submission, then filters the full dataset',()=>{
+ const f=fixture();f.view.rows=rows;f.view.ready=true;f.view.bindFilters();f.view.update();
+ f.get('#filter-q').value='Bravo';
+ assert.equal(f.view.filters.q,'');assert.equal(f.get('#stat-count').textContent,4);assert.equal(f.calls.length,0);
+ // A native search form submits for both Enter and the Search button.
+ let prevented=false;
+ f.events['#rating-searchsubmit']({preventDefault(){prevented=true;}});
+ assert.equal(prevented,true);assert.equal(f.view.filters.q,'Bravo');assert.equal(f.get('#stat-count').textContent,1);
+ assert.match(f.location.search,/q=Bravo/);
+ f.get('#filter-q').value='';
+ f.events['#rating-searchsubmit']({preventDefault(){}});
+ assert.equal(f.get('#stat-count').textContent,4);
+});
+test('search and sort live inside Filters in the requested order',()=>{
+ const html=fs.readFileSync(new URL('../ratings-overview.html',import.meta.url),'utf8');
+ const panel=html.slice(html.indexOf('<details class="rating-filter-panel">'));
+ assert.ok(panel.indexOf('id="rating-search"')<panel.indexOf('id="filter-member"'));
+ assert.ok(panel.indexOf('id="filter-sort"')>panel.indexOf('data-period="months"'));
+ assert.ok(panel.indexOf('id="filter-sort"')<panel.indexOf('</details>'));
+ assert.match(panel,/<button type="submit">Search<\/button>/);
+});
