@@ -63,6 +63,21 @@ const root=path.resolve(__dirname,'..');
   assert.equal(await page.evaluate(()=>window.rows.length),1);assert.equal(await page.evaluate(()=>window.rows[0].rating_photos),null);
   await page.locator('[data-edit]').click();await page.locator('#rating-photo').setInputFiles({name:'broken.jpg',mimeType:'image/jpeg',buffer:Buffer.from('invalid image')});await page.waitForFunction(()=>document.querySelector('#photo-status').textContent==='Could not process this photo. Choose another photo.');
   await upload();await page.waitForFunction(()=>document.querySelector('#photo-status').textContent==='Photo ready.');await page.locator('#cancel-edit').click();assert.equal(await page.locator('#photo-preview').isVisible(),false);
-  assert.deepEqual(errors,[]);console.log('Browser photo checks passed: compression, preview, upload failure/retry, single rating, dialog, removal, invalid image, cancellation.');
+  const oriented=await page.evaluate(async()=>{
+   const canvas=document.createElement('canvas');canvas.width=2400;canvas.height=1200;
+   canvas.getContext('2d').fillRect(0,0,2400,1200);
+   const original=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg'));
+   const bytes=new Uint8Array(await original.arrayBuffer());
+   const exif=new Uint8Array([255,225,0,34,69,120,105,102,0,0,73,73,42,0,8,0,0,0,1,0,18,1,3,0,1,0,0,0,6,0,0,0,0,0,0,0]);
+   const file=new File([bytes.slice(0,2),exif,bytes.slice(2)],'rotated.jpg',{type:'image/jpeg'});
+   const compressed=await window.RatingPhotos.compress(file),bitmap=await createImageBitmap(compressed);
+   const result={width:bitmap.width,height:bitmap.height,hasExif:new TextDecoder().decode(await compressed.arrayBuffer()).includes('Exif')};bitmap.close();return result;
+  });
+  assert.deepEqual(oriented,{width:600,height:1200,hasExif:false});
+  const seed=await page.evaluate(()=>({rows:window.rows.map(r=>({...r,rating_photos:{path:r.id+'/existing.jpg'}})),url:window.photoURL}));
+  await page.addInitScript(({rows,url})=>{window.rows=rows;window.photoURL=url;},seed);
+  await page.goto('https://fixture.local/ratings-overview');await page.waitForSelector('.rating-photo');await page.locator('.rating-photo').scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.rating-photo').naturalWidth>0);
+  await page.locator('.rating-photo-button').click();await page.waitForSelector('#photo-dialog[open]');await page.keyboard.press('Escape');
+  assert.deepEqual(errors,[]);console.log('Browser photo checks passed: compression, preview, upload failure/retry, single rating, dialog, removal, invalid image, cancellation, EXIF orientation/stripping and group overview.');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -7,6 +7,9 @@
   1200×900 JPEG under 300,000 bytes), preview, failed upload and retry preserving
   the same rating/comment, private image rendering, keyboard dismissal of the
   larger photo, photo removal, malformed input, and cancelling a prepared photo.
+- A JPEG with EXIF orientation 6 was rotated correctly to 600×1200; the
+  re-encoded output contained no EXIF block. Group overview photo rendering and
+  its larger view also passed.
 - A mobile screenshot is retained as `rating-photos-mobile.png`.
 - Backend calls in the browser fixture are mocked. Database policies and cleanup
   state transitions are separately covered by `supabase/tests/rating_photos.test.sql`.
