@@ -14,7 +14,7 @@
     $('#stat-average').textContent='—';
     $('#list-count').textContent='0 plates';
     $('#map-count').textContent='0 places';
-    pins.forEach(pin=>pin.remove());pins.clear();
+    new Set(pins.values()).forEach(pin=>pin.remove());pins.clear();
   }
   function render(rows,names){
     $('#stat-count').textContent=rows.length;
@@ -24,22 +24,23 @@
       const restaurant=r.restaurants||{};
       return '<article class="rating-card" id="rating-'+esc(r.id)+'" tabindex="-1"><div class="card-top"><div><div class="card-name" data-i18n-skip>'+esc(restaurant.name)+'</div><div class="card-date"><span data-i18n-skip>'+esc(r.visited_on)+' · '+esc(names.get(r.created_by)||'Member')+'</span></div><div class="card-location" data-i18n-skip>'+esc(restaurant.address)+'</div></div><div class="card-score">'+average(r).toFixed(1)+'<small> / 5</small></div></div><div class="score-summary"><span>Sauce <b>'+r.sauce+'/5</b></span><span>Texture <b>'+r.texture+'/5</b></span><span>Portion <b>'+r.portion+'/5</b></span></div>'+window.RatingComments.render(r.comment,r.id)+ (restaurant.latitude!=null&&restaurant.longitude!=null?'<div class="card-actions"><button type="button" class="card-action-button" data-map="'+esc(r.restaurant_id)+'">Show on map</button></div>':'')+'</article>';
     }).join('')||'<div class="empty-state"><strong>No ratings yet.</strong></div>';
-    const places=new Map();
-    rows.forEach(r=>{if(r.restaurants?.latitude==null||r.restaurants?.longitude==null)return;if(!places.has(r.restaurant_id))places.set(r.restaurant_id,[]);places.get(r.restaurant_id).push(r);});
+    const mapped=rows.filter(r=>r.restaurants?.latitude!=null&&r.restaurants?.longitude!=null);
+    const places=window.RatingNavigation.groupLocations(mapped,r=>[r.restaurants.latitude,r.restaurants.longitude]);
     $('#map-count').textContent=places.size+' places';
     if(!map&&window.L){
       map=L.map('belgium-map',{scrollWheelZoom:false}).setView([50.65,4.65],8);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
     }
-    pins.forEach(pin=>pin.remove());pins.clear();
+    new Set(pins.values()).forEach(pin=>pin.remove());pins.clear();
     if(map){
-      places.forEach((ratings,id)=>{
+      places.forEach(ratings=>{
         const restaurant=ratings[0].restaurants;
+        const multipleRestaurants=new Set(ratings.map(r=>r.restaurant_id)).size>1;
         const popup=document.createElement('div');
-        popup.innerHTML='<strong data-i18n-skip>'+esc(restaurant.name)+'</strong><br><span data-i18n-skip>'+esc(restaurant.address)+'</span>'+ratings.map(r=>'<div class="popup-rating"><span data-i18n-skip>'+esc(names.get(r.created_by)||'Member')+' · '+esc(r.visited_on)+' · '+average(r).toFixed(1)+'/5</span><button type="button" class="card-action-button" data-rating="'+esc(r.id)+'">View this rating</button></div>').join('');
+        popup.innerHTML='<strong data-i18n-skip>'+esc(restaurant.name)+'</strong><br><span data-i18n-skip>'+esc(restaurant.address)+'</span>'+ratings.map(r=>'<div class="popup-rating">'+(multipleRestaurants?'<strong data-i18n-skip>'+esc(r.restaurants.name)+'</strong><span data-i18n-skip>'+esc(r.restaurants.address)+'</span>':'')+'<span data-i18n-skip>'+esc(names.get(r.created_by)||'Member')+' · '+esc(r.visited_on)+' · '+average(r).toFixed(1)+'/5</span><button type="button" class="card-action-button" data-rating="'+esc(r.id)+'">View this rating</button></div>').join('');
         const pin=L.marker([restaurant.latitude,restaurant.longitude]).addTo(map).bindPopup(popup);
         pin.on('popupopen',()=>window.RatingNavigation.bind(pin.getPopup().getElement(),map));
-        pins.set(id,pin);
+        ratings.forEach(rating=>pins.set(rating.restaurant_id,pin));
       });
       map.invalidateSize();
     }else $('#map-help').textContent='The map could not load. You can still browse the ratings above.';
