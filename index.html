@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="map.css"><link rel="stylesheet" href="/pwa.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/runtime-config.js"></script><script src="/i18n.js" defer></script><script src="/profile-menu.js" defer></script><script src="app.js" defer></script><script src="/pwa.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/runtime-config.js"></script><script src="/i18n.js" defer></script><script src="/rating-comments.js" defer></script><script src="/profile-menu.js" defer></script><script src="app.js" defer></script><script src="/pwa.js" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -66,6 +66,12 @@
               <label class="check-option"><input type="checkbox" name="hospitality"><span class="checkmark"></span><span>Warm hospitality</span></label>
             </div>
           </fieldset>
+          <div class="comment-field">
+            <label class="field" for="rating-comment">Comment (optional)</label>
+            <textarea id="rating-comment" name="comment" rows="3" placeholder="Would you like to explain your rating?" aria-describedby="comment-help comment-count comment-error"></textarea>
+            <div class="comment-meta"><span id="comment-help">Maximum 500 characters.</span><output id="comment-count" for="rating-comment" aria-label="Comment character count" data-i18n-skip>0/500</output></div>
+            <p id="comment-error" class="comment-error" aria-live="polite" hidden></p>
+          </div>
           <button class="submit-button" type="submit">Save this plate <span aria-hidden="true">↗</span></button>
           <button id="cancel-edit" class="cancel-edit" type="button" hidden>Cancel editing</button>
           <p id="save-status" class="privacy-note" role="status" aria-live="polite">Ratings are shared with your group.</p>

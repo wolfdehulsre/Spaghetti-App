@@ -305,6 +305,8 @@
   "Invalid member.": "Membre invalide.",
   "Member not found in this group.": "Membre introuvable dans ce groupe."
 };
+  Object.assign(copy, {"Comment (optional)": "Opmerking (optioneel)", "Would you like to explain your rating?": "Wil je je beoordeling toelichten?", "Maximum 500 characters.": "Maximaal 500 tekens.", "Your comment cannot exceed 500 characters.": "Je opmerking mag maximaal 500 tekens bevatten.", "Read more": "Meer lezen", "Show less comment": "Minder tonen", "Comment character count": "Aantal tekens in de opmerking"});
+  Object.assign(french, {"Comment (optional)": "Commentaire (facultatif)", "Would you like to explain your rating?": "Souhaitez-vous préciser votre évaluation ?", "Maximum 500 characters.": "Maximum 500 caractères.", "Your comment cannot exceed 500 characters.": "Votre commentaire ne peut pas dépasser 500 caractères.", "Read more": "Lire la suite", "Show less comment": "Afficher moins", "Comment character count": "Nombre de caractères du commentaire"});
   let language = 'en';
   const browserLanguage = navigator.language.toLowerCase().split('-')[0];
   if (['nl', 'fr'].includes(browserLanguage)) language = browserLanguage;
@@ -313,7 +315,7 @@
   const originals = new WeakMap();
   const attributes = new WeakMap();
   function translate(text) {
-    if (language === 'en') return text.replace(/^1 plates$/, '1 plate').replace(/^1 places$/, '1 place');
+    if (language === 'en') return text.replace(/^Show less comment$/, 'Show less').replace(/^1 plates$/, '1 plate').replace(/^1 places$/, '1 place');
     const trimmed = text.trim();
     const catalog = language === 'fr' ? french : copy;
     let result = Object.hasOwn(catalog, trimmed) ? catalog[trimmed] : undefined;

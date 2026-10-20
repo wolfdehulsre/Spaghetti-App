@@ -8,7 +8,7 @@ function fixture(source){
  const elements=new Map();
  const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',innerHTML:'',hidden:false,replaceChildren(){this.innerHTML='';},insertAdjacentHTML(_,html){this.innerHTML+=html;}});return elements.get(id);};
  const context=vm.createContext({window:{APP_CONFIG:{groupId:'group'}},document:{querySelector:get,addEventListener(){}},location:new URL('https://example.com/'),URLSearchParams,Map,console});
- vm.runInContext(source,context);return {get,context,run:code=>vm.runInContext(code,context)};
+ vm.runInContext(fs.readFileSync(new URL('../rating-comments.js',import.meta.url),'utf8'),context);vm.runInContext(source,context);return {get,context,run:code=>vm.runInContext(code,context)};
 }
 const homeRows=[{id:'mine',restaurant_id:'r1',created_by:'me',date:'2026-10-18',name:'My restaurant',author:'Me',sauce:3,texture:3,portion:3,lat:50,lng:4},{id:'theirs',restaurant_id:'r2',created_by:'friend',date:'2026-10-18',name:'Friend restaurant',author:'Friend',sauce:5,texture:5,portion:5,lat:51,lng:3}];
 test('home list, counters, mean and map all exclude other members',()=>{
