@@ -5,7 +5,7 @@
   const average=rating=>(Number(rating.sauce)+Number(rating.texture)+Number(rating.portion))/3;
   let db,map,activeUser=null,generation=0;
   const pins=new Map();
-  let allRows=[],memberNames=new Map(),ready=false;
+  let allRows=[],memberNames=new Map(),ready=false,showAllRatings=false;
   const defaults=()=>({q:'',member:'',score:'',from:'',to:'',sort:'newest'});
   let filters=defaults();
   const locale=()=>window.UI?.language||'en';
@@ -54,8 +54,9 @@
       return order||recent(a,b)||String(a.id).localeCompare(String(b.id));
     });
   }
-  function update(){
+  function update(reset=false){
     if(!ready)return;
+    if(reset===true)showAllRatings=false;
     render(selectRows(allRows,filters),memberNames,allRows.length);
     Object.keys(filters).forEach(key=>{if(key!=='q'||document.activeElement!==$('#filter-q'))$('#filter-'+key).value=filters[key];});
     // Options are excluded from automatic translation unless explicitly marked as UI copy.
@@ -70,16 +71,18 @@
     }).join('');
     $('#clear-filters').hidden=!Object.keys(filters).some(key=>filters[key]!==defaults()[key]);
   }
-  function resetFilters(){filters=defaults();writeURL();update();}
+  function revealRatings(){showAllRatings=true;update();}
+  function toggleRatings(){showAllRatings=!showAllRatings;update();}
+  function resetFilters(){filters=defaults();writeURL();update(true);}
   function bindFilters(){
     $('#rating-controls').addEventListener('input',event=>{
       if(event.target.id!=='filter-q')return;
-      filters.q=event.target.value.trim();writeURL();update();
+      filters.q=event.target.value.trim();writeURL();update(true);
     });
     $('#rating-controls').addEventListener('change',event=>{
       const key=event.target.id.replace('filter-','');
       if(!(key in defaults())||key==='q')return;
-      filters=normalize({...filters,[key]:event.target.value});writeURL();update();
+      filters=normalize({...filters,[key]:event.target.value});writeURL();update(true);
     });
     $('#rating-controls').addEventListener('click',event=>{
       const button=event.target.closest('[data-period]');if(!button)return;
@@ -91,16 +94,16 @@
         start.setDate(Math.min(day,new Date(start.getFullYear(),start.getMonth()+1,0).getDate()));
       }
       const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-      filters={...filters,from:iso(start),to:iso(end)};writeURL();update();
+      filters={...filters,from:iso(start),to:iso(end)};writeURL();update(true);
     });
     $('#clear-filters').onclick=resetFilters;
-    window.addEventListener('popstate',()=>{if(ready){readURL();writeURL(true);update();}});
+    window.addEventListener('popstate',()=>{if(ready){readURL();writeURL(true);update(true);}});
     document.addEventListener('languagechange',update);
   }
 
   function clear(){
     generation++;
-    ready=false;allRows=[];memberNames.clear();
+    ready=false;showAllRatings=false;allRows=[];memberNames.clear();
     filters=defaults();
     $('#filter-member').innerHTML='<option data-i18n-option value="">All members</option><option data-i18n-option value="me">Only my ratings</option>';
     $('#active-filters').replaceChildren();
@@ -117,10 +120,12 @@
     $('#stat-count').textContent=rows.length;
     $('#list-count').textContent=t(total===1?'{shown} of {total} rating':'{shown} of {total} ratings').replace('{shown}',rows.length).replace('{total}',total);
     $('#stat-average').textContent=rows.length?number(rows.reduce((sum,r)=>sum+average(r),0)/rows.length):'—';
-    $('#ratings-list').innerHTML=rows.map(r=>{
+    const visible=showAllRatings?rows:rows.slice(0,5);
+    $('#ratings-list').innerHTML=visible.map(r=>{
       const restaurant=r.restaurants||{};
       return '<article class="rating-card" id="rating-'+esc(r.id)+'" tabindex="-1"><div class="card-top"><div><div class="card-name" data-i18n-skip>'+esc(restaurant.name)+'</div><div class="card-date"><span data-i18n-skip>'+esc(dateLabel(r.visited_on))+' · '+esc(names.get(r.created_by)||t('Member'))+'</span></div><div class="card-location" data-i18n-skip>'+esc(restaurant.address)+'</div></div><div class="card-score">'+number(average(r))+'<small> / 5</small></div></div><div class="score-summary"><span>Sauce <b>'+r.sauce+'/5</b></span><span>Texture <b>'+r.texture+'/5</b></span><span>Portion <b>'+r.portion+'/5</b></span></div>'+window.RatingComments.render(r.comment,r.id)+ (restaurant.latitude!=null&&restaurant.longitude!=null?'<div class="card-actions"><button type="button" class="card-action-button" data-map="'+esc(r.restaurant_id)+'">Show on map</button></div>':'')+'</article>';
     }).join('')||(total?'<div class="empty-state"><strong>No ratings found.</strong><button type="button" data-clear-filters>Clear filters</button></div>':'<div class="empty-state"><strong>No ratings yet.</strong></div>');
+    if(rows.length>5)$('#ratings-list').innerHTML+='<button type="button" class="show-more-button" data-show-more aria-expanded="'+showAllRatings+'">'+(showAllRatings?'Show less':'Show more ('+(rows.length-5)+')')+'</button>';
     const mapped=rows.filter(r=>r.restaurants?.latitude!=null&&r.restaurants?.longitude!=null);
     const places=window.RatingNavigation.groupLocations(mapped,r=>[r.restaurants.latitude,r.restaurants.longitude]);
     $('#map-count').textContent=places.size+' places';
@@ -135,7 +140,7 @@
         const popup=document.createElement('div');
         popup.innerHTML=window.RatingNavigation.popup(ratings.map(r=>({id:r.id,name:r.restaurants.name,address:r.restaurants.address,author:names.get(r.created_by)||t('Member'),date:dateLabel(r.visited_on),score:number(average(r))})));
         const pin=L.marker([restaurant.latitude,restaurant.longitude]).addTo(map).bindPopup(popup,{maxWidth:260,maxHeight:220});
-        pin.on('popupopen',()=>window.RatingNavigation.bind(pin.getPopup().getElement(),map));
+        pin.on('popupopen',()=>window.RatingNavigation.bind(pin.getPopup().getElement(),map,revealRatings));
         ratings.forEach(rating=>pins.set(rating.restaurant_id,pin));
       });
       map.invalidateSize();
@@ -161,7 +166,7 @@
     allRows=result.data;
     memberNames=new Map(members.data.map(m=>[m.user_id,m.display_name]));
     $('#filter-member').innerHTML='<option data-i18n-option value="">All members</option><option data-i18n-option value="me">Only my ratings</option>'+[...memberNames].sort((a,b)=>a[1].localeCompare(b[1],locale())).map(([id,name])=>'<option data-i18n-skip value="'+esc(id)+'">'+esc(name)+'</option>').join('');
-    ready=true;readURL();writeURL(true);update();
+    ready=true;readURL();writeURL(true);update(true);
   }
   async function boot(){
     if(!config.supabaseUrl||!config.supabaseAnonKey||!config.groupId||!window.supabase)throw Error('The app could not connect. Reload and try again.');
@@ -172,6 +177,7 @@
     $('#sign-out').onclick=async()=>{clear();const result=await db.auth.signOut();if(result.error)$('#overview-status').textContent='Sign out failed. Try again.';};
     document.addEventListener('click',event=>{if(!$('#account-controls').contains(event.target))$('#account-controls').open=false;});
     $('#ratings-list').onclick=event=>{
+      if(event.target.closest('[data-show-more]')){toggleRatings();return;}
       if(event.target.closest('[data-clear-filters]')){resetFilters();return;}
       const button=event.target.closest('[data-map]');if(!button)return;
       const pin=pins.get(button.dataset.map);if(!pin)return;
