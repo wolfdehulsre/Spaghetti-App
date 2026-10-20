@@ -19,3 +19,15 @@ test('acknowledgement failure is retried; empty queue skips Storage',async()=>{
  assert.equal((await fixture({ackError:true}).handle(request())).status,500);
  const f=fixture({paths:[]});assert.equal((await f.handle(request())).status,200);assert.equal(f.calls.length,1);
 });
+test('asynchronous Vault authorization rejects before touching cleanup data',async()=>{
+ let clients=0;const handle=createCleanupHandler({authorize:async()=>false,createClient:()=>{clients++;}});
+ assert.equal((await handle(request())).status,401);assert.equal(clients,0);
+});
+test('Vault authorization failures fail closed and do not consume the queue',async()=>{
+ let clients=0;const handle=createCleanupHandler({authorize:async()=>{throw Error('Vault unavailable');},createClient:()=>{clients++;}});
+ assert.equal((await handle(request())).status,500);assert.equal(clients,0);
+});
+test('missing token is rejected without a Vault request',async()=>{
+ let checks=0;const handle=createCleanupHandler({authorize:async()=>{checks++;return true;},createClient:()=>{throw Error('unreachable');}});
+ assert.equal((await handle(new Request('https://example.invalid',{method:'POST'}))).status,401);assert.equal(checks,0);
+});

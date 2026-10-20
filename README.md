@@ -71,17 +71,21 @@ with a five-minute browser cache and a new immutable path for each replacement.
 
 Deployment order (no paid plan or image transformation service is required):
 
-1. Apply the committed `rating_photos` migration using the existing Supabase
+1. Apply the committed `rating_photos`, `photo_cleanup_vault_auth`, and
+   `photo_cleanup_scheduler_extensions` migrations using the existing Supabase
    migration workflow. It creates the private `rating-photos` bucket, limits,
    ownership-checked RPC, and RLS policies. Deploy the database before the UI.
 2. Deploy `supabase/functions/cleanup-rating-photos`. Keep JWT verification on.
-   Set a randomly generated `PHOTO_CLEANUP_SECRET` in the function's secrets.
+   The worker verifies its token directly in Vault through a service-role-only
+   boolean RPC. No separate Edge Function secret is needed.
 3. In Supabase Vault, create `photo_project_url` (the project's HTTPS URL),
    `photo_anon_key` (its **legacy JWT anon key**, not an `sb_publishable_` key),
-   and `photo_cleanup_secret` (the same random value as the function secret).
+   and `photo_cleanup_secret` (a cryptographically random token of at least 32
+   characters; generate it inside SQL with
+   `encode(extensions.gen_random_bytes(32), 'hex')`).
    Keep the secret out of source control and browser configuration.
 4. Run `supabase/ops/schedule-photo-cleanup.sql` in the SQL editor as postgres.
-   It installs a job every 15 minutes, using Vault rather than embedding secrets
+   It configures a job every 15 minutes, using Vault rather than embedding secrets
    in the cron command. Monitor Cron job runs and the function's HTTP status.
 5. Deploy the static app and test upload, replacement and removal with a member
    account. Check Storage usage in the organization's Usage dashboard.

@@ -1,9 +1,8 @@
--- Run as postgres AFTER deploying cleanup-rating-photos and configuring Vault.
+-- Run as postgres AFTER applying migrations, deploying cleanup-rating-photos,
+-- and configuring Vault. The function checks the token in Vault directly.
 -- Vault must contain: photo_project_url, photo_anon_key (legacy JWT anon key),
--- photo_cleanup_secret (same value as the PHOTO_CLEANUP_SECRET function secret).
+-- photo_cleanup_secret (a cryptographically random token of at least 32 characters).
 -- No secret values are embedded in cron.job.command.
-create extension if not exists pg_cron;
-create extension if not exists pg_net;
 do $$ begin
   if (select count(*) from vault.decrypted_secrets where name in
       ('photo_project_url','photo_anon_key','photo_cleanup_secret'))<>3 then

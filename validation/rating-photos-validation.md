@@ -19,5 +19,26 @@
   Supabase stack.
 
 Deployment requires applying the migration, deploying the cleanup function,
-configuring the matching secret in Edge Function secrets and Vault, and running
+configuring the token in Vault (checked by a service-role-only boolean RPC), and running
 `supabase/ops/schedule-photo-cleanup.sql` before releasing the frontend. See README.
+
+
+## Backend rollout — 2026-10-20
+
+Deployed to the app's configured project `nqvjcqitzaxteuvkdnks`:
+
+- All three photo migrations applied; migration history matches committed file versions.
+- Private `rating-photos` bucket: 300,000-byte limit, JPEG/WebP only.
+- `cleanup-rating-photos` Edge Function active with gateway JWT verification.
+- Token generated inside Vault without returning its plaintext. The worker checks
+  it through a service-role-only RPC; no manual Edge secret synchronization.
+- `pg_cron` and `pg_net` enabled. The active `cleanup-rating-photos` job runs every
+  15 minutes and obtains its URL, gateway key and token from Vault at runtime.
+- Manual invocation of the scheduled command returned HTTP 200, `{"removed":0}`.
+- The same endpoint rejected an incorrect cleanup token with HTTP 401.
+- Ordinary members cannot invoke cleanup or token verification RPCs.
+- No member ratings or photos were created or changed during rollout checks.
+
+Security advisor found no photo-related findings. The existing invite-attempts
+policy notice and disabled leaked-password protection are unrelated to this change.
+The frontend PR remains separate from this backend rollout.

@@ -1,9 +1,13 @@
-export function createCleanupHandler({getSecret,createClient}){
+/** @param {{ getSecret?: () => string | undefined, authorize?: (provided: string) => boolean | Promise<boolean>, createClient: () => any }} dependencies */
+export function createCleanupHandler({getSecret,authorize,createClient}){
   return async request=>{
-    const secret=getSecret();
-    if(request.method!=='POST'||!secret||request.headers.get('x-cleanup-secret')!==secret)
-      return new Response('Unauthorized',{status:401});
+    if(request.method!=='POST')return new Response('Unauthorized',{status:401});
     try{
+      const provided=request.headers.get('x-cleanup-secret');
+      if(!provided||provided.length>256)return new Response('Unauthorized',{status:401});
+      const secret=authorize ? undefined : getSecret?.();
+      const allowed=authorize ? await authorize(provided) : !!secret&&provided===secret;
+      if(!allowed)return new Response('Unauthorized',{status:401});
       const db=createClient();
       const batch=await db.rpc('photo_cleanup_batch');
       if(batch.error)return new Response('Could not prepare cleanup',{status:500});
