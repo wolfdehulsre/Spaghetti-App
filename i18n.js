@@ -1,6 +1,7 @@
 // UI copy only: member names, restaurant data and form values are never translated.
 (() => {
   const copy = {
+    "Choose photo":"Foto kiezen",
     "Photo":"Foto",
     "optional · one photo per rating":"optioneel · één foto per beoordeling",
     "JPEG, PNG or WebP, up to 10 MB. Photos are reduced before uploading.":"JPEG, PNG of WebP, tot 10 MB. Foto’s worden verkleind vóór het uploaden.",
@@ -131,6 +132,7 @@
     'This account is not a member of this group.':'Dit account is geen lid van deze groep.'
   });
   const french = {
+    "Choose photo":"Choisir une photo",
     "Photo":"Photo",
     "optional · one photo per rating":"facultatif · une photo par évaluation",
     "JPEG, PNG or WebP, up to 10 MB. Photos are reduced before uploading.":"JPEG, PNG ou WebP, jusqu’à 10 Mo. Les photos sont réduites avant l’envoi.",
