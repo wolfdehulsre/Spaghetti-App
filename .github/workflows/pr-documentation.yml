@@ -1,0 +1,52 @@
+name: PR documentation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  pr-documentation:
+    name: pr-documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Validate required PR sections
+        # Read metadata as data; never interpolate or execute the PR body.
+        # No checkout, dependencies, secrets or write permissions are needed.
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+          const body = (event.pull_request.body || '').replace(/<!--[\s\S]*?-->/g, '');
+          const sections = new Map();
+          let current;
+          for (const line of body.split(/\r?\n/)) {
+            const heading = line.match(/^##\s+(.+?)\s*#*\s*$/);
+            if (heading) {
+              current = heading[1].trim().toLowerCase();
+              if (sections.has(current)) {
+                console.error('Duplicate section: ' + current);
+                process.exit(1);
+              }
+              sections.set(current, '');
+            } else if (current) {
+              sections.set(current, sections.get(current) + '\n' + line);
+            }
+          }
+          const required = ['Opgeleverd', 'Validatie', 'Beperkingen', 'Deployment'];
+          const missing = required.filter(name => {
+            const content = (sections.get(name.toLowerCase()) || '').trim();
+            const text = content.replace(/^[\s>*_`#\-\[\]x]+/gim, '').trim();
+            return !text || /^(?:todo|tbd|n\/?a|\.\.\.|…|vul.*in)[.!\s]*$/i.test(text);
+          });
+          if (missing.length) {
+            console.error('Fill in these PR sections: ' + missing.join(', '));
+            console.error('Use the PR template. Explain skipped tests; use Geen or Niet van toepassing where appropriate.');
+            process.exit(1);
+          }
+          console.log('All four PR documentation sections are filled in.');
+          NODE
